@@ -33,7 +33,7 @@
 import {Settings} from "../settings/Settings";
 import {LktObject} from "lkt-ts-interfaces";
 import {defineComponent} from "vue";
-import {getRouter, httpCall} from "lkt-http-client";
+import {getHTTPResource, getRouter, httpCall} from "lkt-http-client";
 
 export default defineComponent({
     emits: ['update:modelValue', 'loading', 'results', 'error'],
@@ -53,7 +53,8 @@ export default defineComponent({
     },
     data(): LktObject {
         return {
-            Page: 1
+            Page: 1,
+            MaxPage: this.maxPage
         }
     },
     computed: {
@@ -87,8 +88,8 @@ export default defineComponent({
         nextPages() {
             let r = [];
             let l = this.Page + 5;
-            if (l > this.maxPage) {
-                l = this.maxPage;
+            if (l > this.MaxPage) {
+                l = this.MaxPage;
             }
 
             for (let i = this.Page + 1; i <= l; ++i) {
@@ -98,13 +99,13 @@ export default defineComponent({
         },
         options() {
             let r = [];
-            for (let i = 1; i <= this.maxPage; ++i) {
+            for (let i = 1; i <= this.MaxPage; ++i) {
                 r.push({id: i, text: i});
             }
             return r;
         },
         disabledNext() {
-            return this.Page >= this.maxPage;
+            return this.Page >= this.MaxPage;
         },
         disabledPrev() {
             return this.Page <= 1;
@@ -132,7 +133,6 @@ export default defineComponent({
     },
     methods: {
         loadPage() {
-            console.log('loadPage', this.Page);
             let d: LktObject = {};
             if (typeof this.filters === 'object' && Object.keys(this.filters).length > 0) {
                 d = JSON.parse(JSON.stringify(this.filters));
@@ -145,19 +145,20 @@ export default defineComponent({
             d.page = this.Page;
             this.$emit('update:modelValue', this.Page);
             this.$emit('loading');
-            console.log('loadPage 1', d);
             if (this.slaveMode) {
                 return;
             }
 
-            console.log('before call', this.resource, httpCall, getRouter());
-
+            let resource = getHTTPResource(this.resource);
 
             httpCall(this.resource, d).then((r: any) => {
-                console.log('hey!', r);
-                this.$emit('results', r.data);
+                // @ts-ignore
+                let latestMaxPage = resource.getLatestMaxPage();
+                if (latestMaxPage > -1){
+                    this.MaxPage = latestMaxPage;
+                }
+                this.$emit('results', r);
             }).catch((r: any) => {
-                console.log('douch!', r);
                 this.$emit('error', r);
             });
         },
@@ -165,7 +166,7 @@ export default defineComponent({
             ++this.Page;
         },
         latest() {
-            this.Page = this.maxPage;
+            this.Page = this.MaxPage;
         },
         prev() {
             --this.Page;

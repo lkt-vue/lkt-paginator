@@ -1,12 +1,12 @@
 var T = Object.defineProperty;
-var B = (e, t, a) => t in e ? T(e, t, { enumerable: !0, configurable: !0, writable: !0, value: a }) : e[t] = a;
-var u = (e, t, a) => (B(e, typeof t != "symbol" ? t + "" : t, a), a);
-import { defineComponent as _, resolveComponent as k, openBlock as p, createElementBlock as f, createVNode as g, withCtx as o, createElementVNode as i, toDisplayString as n, Fragment as h, renderList as m, createBlock as P } from "vue";
-import { httpCall as c, getRouter as b } from "lkt-http-client";
+var c = (e, t, a) => t in e ? T(e, t, { enumerable: !0, configurable: !0, writable: !0, value: a }) : e[t] = a;
+var u = (e, t, a) => (c(e, typeof t != "symbol" ? t + "" : t, a), a);
+import { defineComponent as B, resolveComponent as _, openBlock as p, createElementBlock as f, createVNode as g, withCtx as n, createElementVNode as o, toDisplayString as d, Fragment as h, renderList as P, createBlock as m } from "vue";
+import { getHTTPResource as b, httpCall as k } from "lkt-http-client";
 class l {
 }
 u(l, "FIRST_BUTTON_NAME", "First"), u(l, "PREV_BUTTON_NAME", "Prev"), u(l, "NEXT_BUTTON_NAME", "Next"), u(l, "LATEST_BUTTON_NAME", "Latest");
-const v = _({
+const v = B({
   emits: ["update:modelValue", "loading", "results", "error"],
   name: "LktPaginator",
   props: {
@@ -24,7 +24,8 @@ const v = _({
   },
   data() {
     return {
-      Page: 1
+      Page: 1,
+      MaxPage: this.maxPage
     };
   },
   computed: {
@@ -43,25 +44,25 @@ const v = _({
     previousPages() {
       let e = [], t = this.Page - 1, a = t - 5;
       a < 0 && (a = 0);
-      for (let d = t; d > a; --d)
-        e.push(d);
+      for (let r = t; r > a; --r)
+        e.push(r);
       return e = e.reverse(), e;
     },
     nextPages() {
       let e = [], t = this.Page + 5;
-      t > this.maxPage && (t = this.maxPage);
+      t > this.MaxPage && (t = this.MaxPage);
       for (let a = this.Page + 1; a <= t; ++a)
         e.push(a);
       return e;
     },
     options() {
       let e = [];
-      for (let t = 1; t <= this.maxPage; ++t)
+      for (let t = 1; t <= this.MaxPage; ++t)
         e.push({ id: t, text: t });
       return e;
     },
     disabledNext() {
-      return this.Page >= this.maxPage;
+      return this.Page >= this.MaxPage;
     },
     disabledPrev() {
       return this.Page <= 1;
@@ -83,22 +84,25 @@ const v = _({
   },
   methods: {
     loadPage() {
-      console.log("loadPage", this.Page);
       let e = {};
       typeof this.filters == "object" && Object.keys(this.filters).length > 0 && (e = JSON.parse(JSON.stringify(this.filters)));
-      for (let t in e)
-        (Array.isArray(e[t]) || typeof e[t] == "object") && (e[t] = JSON.stringify(e[t]));
-      e.page = this.Page, this.$emit("update:modelValue", this.Page), this.$emit("loading"), console.log("loadPage 1", e), !this.slaveMode && (console.log("before call", this.resource, c, b()), c(this.resource, e).then((t) => {
-        console.log("hey!", t), this.$emit("results", t.data);
-      }).catch((t) => {
-        console.log("douch!", t), this.$emit("error", t);
-      }));
+      for (let a in e)
+        (Array.isArray(e[a]) || typeof e[a] == "object") && (e[a] = JSON.stringify(e[a]));
+      if (e.page = this.Page, this.$emit("update:modelValue", this.Page), this.$emit("loading"), this.slaveMode)
+        return;
+      let t = b(this.resource);
+      k(this.resource, e).then((a) => {
+        let r = t.getLatestMaxPage();
+        r > -1 && (this.MaxPage = r), this.$emit("results", a);
+      }).catch((a) => {
+        this.$emit("error", a);
+      });
     },
     next() {
       ++this.Page;
     },
     latest() {
-      this.Page = this.maxPage;
+      this.Page = this.MaxPage;
     },
     prev() {
       --this.Page;
@@ -114,105 +118,105 @@ const v = _({
     console.log("paginator created!!"), !this.slaveMode && this.loadPage();
   }
 });
-const E = (e, t) => {
+const M = (e, t) => {
   const a = e.__vccOpts || e;
-  for (const [d, N] of t)
-    a[d] = N;
+  for (const [r, N] of t)
+    a[r] = N;
   return a;
-}, y = ["data-palette"];
-function O(e, t, a, d, N, C) {
-  const r = k("lkt-button");
+}, E = ["data-palette"];
+function y(e, t, a, r, N, A) {
+  const s = _("lkt-button");
   return p(), f("div", {
     "data-lkt": "paginator",
     "data-palette": e.palette
   }, [
-    g(r, {
+    g(s, {
       onClick: e.first,
       disabled: e.disabledPrev,
       "data-role": "first",
       palette: e.palette
     }, {
-      default: o(() => [
-        i("span", null, n(e.firstButtonName), 1)
+      default: n(() => [
+        o("span", null, d(e.firstButtonName), 1)
       ]),
       _: 1
     }, 8, ["onClick", "disabled", "palette"]),
-    g(r, {
+    g(s, {
       onClick: e.prev,
       disabled: e.disabledPrev,
       "data-role": "prev",
       palette: e.palette
     }, {
-      default: o(() => [
-        i("span", null, n(e.prevButtonName), 1)
+      default: n(() => [
+        o("span", null, d(e.prevButtonName), 1)
       ]),
       _: 1
     }, 8, ["onClick", "disabled", "palette"]),
-    (p(!0), f(h, null, m(e.previousPages, (s) => (p(), P(r, {
-      key: s,
+    (p(!0), f(h, null, P(e.previousPages, (i) => (p(), m(s, {
+      key: i,
       onClick: () => {
-        e.goTo(s);
+        e.goTo(i);
       },
       "data-role": "page",
       palette: e.palette
     }, {
-      default: o(() => [
-        i("span", null, n(s), 1)
+      default: n(() => [
+        o("span", null, d(i), 1)
       ]),
       _: 2
     }, 1032, ["onClick", "palette"]))), 128)),
-    g(r, {
+    g(s, {
       disabled: "",
       "data-role": "page",
       palette: e.palette
     }, {
-      default: o(() => [
-        i("span", null, n(e.Page), 1)
+      default: n(() => [
+        o("span", null, d(e.Page), 1)
       ]),
       _: 1
     }, 8, ["palette"]),
-    (p(!0), f(h, null, m(e.nextPages, (s) => (p(), P(r, {
-      key: s,
+    (p(!0), f(h, null, P(e.nextPages, (i) => (p(), m(s, {
+      key: i,
       onClick: () => {
-        e.goTo(s);
+        e.goTo(i);
       },
       "data-role": "page",
       palette: e.palette
     }, {
-      default: o(() => [
-        i("span", null, n(s), 1)
+      default: n(() => [
+        o("span", null, d(i), 1)
       ]),
       _: 2
     }, 1032, ["onClick", "palette"]))), 128)),
-    g(r, {
+    g(s, {
       onClick: e.next,
       disabled: e.disabledNext,
       "data-role": "next",
       palette: e.palette
     }, {
-      default: o(() => [
-        i("span", null, n(e.nextButtonName), 1)
+      default: n(() => [
+        o("span", null, d(e.nextButtonName), 1)
       ]),
       _: 1
     }, 8, ["onClick", "disabled", "palette"]),
-    g(r, {
+    g(s, {
       onClick: e.latest,
       disabled: e.disabledNext,
       "data-role": "latest",
       palette: e.palette
     }, {
-      default: o(() => [
-        i("span", null, n(e.latestButtonName), 1)
+      default: n(() => [
+        o("span", null, d(e.latestButtonName), 1)
       ]),
       _: 1
     }, 8, ["onClick", "disabled", "palette"])
-  ], 8, y);
+  ], 8, E);
 }
-const A = /* @__PURE__ */ E(v, [["render", O], ["__scopeId", "data-v-253ab614"]]), V = {
+const O = /* @__PURE__ */ M(v, [["render", y], ["__scopeId", "data-v-4f86b5ab"]]), S = {
   install: (e, t) => {
-    e.component("lkt-paginator", A), t && t.firstButtonName && (l.FIRST_BUTTON_NAME = t.firstButtonName), t && t.prevButtonName && (l.PREV_BUTTON_NAME = t.prevButtonName), t && t.nextButtonName && (l.NEXT_BUTTON_NAME = t.nextButtonName), t && t.latestButtonName && (l.LATEST_BUTTON_NAME = t.latestButtonName);
+    e.component("lkt-paginator", O), t && t.firstButtonName && (l.FIRST_BUTTON_NAME = t.firstButtonName), t && t.prevButtonName && (l.PREV_BUTTON_NAME = t.prevButtonName), t && t.nextButtonName && (l.NEXT_BUTTON_NAME = t.nextButtonName), t && t.latestButtonName && (l.LATEST_BUTTON_NAME = t.latestButtonName);
   }
 };
 export {
-  V as default
+  S as default
 };
