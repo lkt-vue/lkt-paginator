@@ -1,0 +1,13 @@
+.lkt-paginator {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.lkt-paginator > * {
+    margin-right: 5px;
+}
+
+.lkt-paginator > *:last-child {
+    margin-right: 0;
+}

@@ -1,13 +1,150 @@
+<script lang="ts">
+export default {name: "LktPaginator", inheritAttrs: false}
+</script>
+
+<script lang="ts" setup>
+
+import {computed, ref, watch} from "vue";
+import {Settings} from "../settings/Settings";
+import {DataState} from "lkt-data-state";
+import {LktObject} from "lkt-ts-interfaces";
+import {getHTTPResource, httpCall} from "lkt-http-client";
+
+const emit = defineEmits(['update:modelValue', 'loading', 'results', 'error']);
+
+const props = defineProps({
+    modelValue: {type: Number, default: 1},
+    maxPage: {type: Number, default: 1},
+    resource: {type: String, default: ''},
+    palette: {type: String, default: ''},
+    readOnly: {type: Boolean, default: false},
+    filters: {
+        type: Object,
+        default() {
+            return {};
+        }
+    }
+});
+
+const Page = ref(props.modelValue),
+    MaxPage = ref(props.maxPage);
+
+
+const firstButtonName = computed(() => Settings.FIRST_BUTTON_NAME),
+    prevButtonName = computed(() => Settings.PREV_BUTTON_NAME),
+    nextButtonName = computed(() => Settings.NEXT_BUTTON_NAME),
+    latestButtonName = computed(() => Settings.LATEST_BUTTON_NAME),
+    previousPages = computed(() => {
+        let r = [];
+        let j: number = Page.value - 1;
+        let l = j - 5;
+        if (l < 0) l = 0;
+
+        for (let i = j; i > l; --i) r.push(i);
+
+        r = r.reverse();
+        return r;
+    }),
+    nextPages = computed(() => {
+        let r = [];
+        let l = Page.value + 5;
+        if (l > MaxPage.value) l = MaxPage.value;
+
+        for (let i = Page.value + 1; i <= l; ++i) r.push(i);
+        return r;
+    }),
+    // options = computed(() => {
+    //     let r = [];
+    //     for (let i = 1; i <= MaxPage.value; ++i) r.push({id: i, text: i});
+    //     return r;
+    // }),
+    disabledNext = computed(() => {
+        return Page.value >= MaxPage.value;
+    }),
+    disabledPrev = computed(() => {
+        return Page.value <= 1;
+    });
+
+const classes = computed(() => {
+    const r = ['lkt-paginator'];
+
+    if (props.palette) r.push(`lkt-paginator--${props.palette}`);
+    if (props.readOnly) r.push(`lkt-paginator--read-only`);
+    r.push(!!props.modelValue && props.modelValue > 0 ? 'is-filled' : 'is-empty');
+
+    return r.join(' ');
+})
+
+// Methods
+const parseFilters = (filters: LktObject, page: number) => {
+    let d: LktObject = {};
+    if (typeof filters === 'object' && Object.keys(filters).length > 0) {
+        d = JSON.parse(JSON.stringify(filters));
+    }
+    for (let k in d) {
+        if (Array.isArray(d[k]) || typeof d[k] === 'object') {
+            d[k] = JSON.stringify(d[k]);
+        }
+    }
+    d.page = page;
+    return d;
+}
+
+let filtersDataState = new DataState(parseFilters(props.filters, Page.value));
+
+const loadPage = () => {
+        if (props.readOnly || !filtersDataState.changed()) return;
+
+        let d = filtersDataState.getData();
+        emit('loading');
+
+        let resource = getHTTPResource(props.resource);
+
+        httpCall(props.resource, d).then((r: any) => {
+            let latestMaxPage = resource.getLatestMaxPage();
+            if (latestMaxPage > -1) MaxPage.value = latestMaxPage;
+
+            filtersDataState.turnStoredIntoOriginal();
+            emit('results', r);
+
+        }).catch((r: any) => {
+            emit('error', r);
+        });
+    },
+    next = () => ++Page.value,
+    latest = () => Page.value = MaxPage.value,
+    prev = () => --Page.value,
+    first = () => Page.value = 1,
+    goTo = (page: number) => Page.value = page
+
+
+watch(() => props.modelValue, (v) => {
+    // @ts-ignore
+    Page.value = parseInt(v);
+})
+watch(Page, (v) => {
+    filtersDataState.store(parseFilters(props.filters, v));
+    emit('update:modelValue', Page.value);
+    loadPage();
+});
+watch(() => props.filters, (v) => {
+    filtersDataState.store(parseFilters(v, Page.value))
+    loadPage();
+});
+
+if (!props.readOnly) loadPage();
+</script>
+
 <template>
-    <div data-lkt="paginator" v-bind:data-palette="palette">
-        <lkt-button @click="first" :disabled="disabledPrev" data-role="first" v-bind:palette="palette">
+    <div :class="classes">
+        <lkt-button v-on:click="first" :disabled="disabledPrev" data-role="first" v-bind:palette="palette">
             <span>{{ firstButtonName }}</span>
         </lkt-button>
-        <lkt-button @click="prev" :disabled="disabledPrev" data-role="prev" v-bind:palette="palette">
+        <lkt-button v-on:click="prev" :disabled="disabledPrev" data-role="prev" v-bind:palette="palette">
             <span>{{ prevButtonName }}</span>
         </lkt-button>
 
-        <lkt-button v-for="page in previousPages" :key="page" @click="() => {goTo(page)}"
+        <lkt-button v-for="page in previousPages" :key="page" v-on:click="() => {goTo(page)}"
                     data-role="page" v-bind:palette="palette">
             <span>{{ page }}</span>
         </lkt-button>
@@ -16,194 +153,15 @@
             <span>{{ Page }}</span>
         </lkt-button>
 
-        <lkt-button v-for="page in nextPages" :key="page" @click="() => {goTo(page)}"
+        <lkt-button v-for="page in nextPages" :key="page" v-on:click="() => {goTo(page)}"
                     data-role="page" v-bind:palette="palette">
             <span>{{ page }}</span>
         </lkt-button>
-        <lkt-button @click="next" :disabled="disabledNext" data-role="next" v-bind:palette="palette">
+        <lkt-button v-on:click="next" :disabled="disabledNext" data-role="next" v-bind:palette="palette">
             <span>{{ nextButtonName }}</span>
         </lkt-button>
-        <lkt-button @click="latest" :disabled="disabledNext" data-role="latest" v-bind:palette="palette">
+        <lkt-button v-on:click="latest" :disabled="disabledNext" data-role="latest" v-bind:palette="palette">
             <span>{{ latestButtonName }}</span>
         </lkt-button>
     </div>
 </template>
-
-<script lang="ts">
-import {Settings} from "../settings/Settings";
-import {LktObject} from "lkt-ts-interfaces";
-import {defineComponent} from "vue";
-import {getHTTPResource, getRouter, httpCall} from "lkt-http-client";
-
-export default defineComponent({
-    emits: ['update:modelValue', 'loading', 'results', 'error'],
-    name: "LktPaginator",
-    props: {
-        modelValue: {type: Number, default: 1,},
-        maxPage: {type: Number, default: 1,},
-        resource: {type: String, default: '',},
-        palette: {type: String, default: '',},
-        slaveMode: {type: Boolean, default: false,},
-        filters: {
-            type: Object,
-            default() {
-                return {};
-            }
-        }
-    },
-    data(): LktObject {
-        return {
-            Page: 1,
-            MaxPage: this.maxPage
-        }
-    },
-    computed: {
-        firstButtonName() {
-            return Settings.FIRST_BUTTON_NAME;
-        },
-        prevButtonName() {
-            return Settings.PREV_BUTTON_NAME;
-        },
-        nextButtonName() {
-            return Settings.NEXT_BUTTON_NAME;
-        },
-        latestButtonName() {
-            return Settings.LATEST_BUTTON_NAME;
-        },
-        previousPages() {
-            let r = [];
-            let j: number = this.Page - 1;
-            let l = j - 5;
-            if (l < 0) {
-                l = 0;
-            }
-
-            for (let i = j; i > l; --i) {
-                r.push(i);
-            }
-
-            r = r.reverse();
-            return r;
-        },
-        nextPages() {
-            let r = [];
-            let l = this.Page + 5;
-            if (l > this.MaxPage) {
-                l = this.MaxPage;
-            }
-
-            for (let i = this.Page + 1; i <= l; ++i) {
-                r.push(i);
-            }
-            return r;
-        },
-        options() {
-            let r = [];
-            for (let i = 1; i <= this.MaxPage; ++i) {
-                r.push({id: i, text: i});
-            }
-            return r;
-        },
-        disabledNext() {
-            return this.Page >= this.MaxPage;
-        },
-        disabledPrev() {
-            return this.Page <= 1;
-        }
-    },
-    watch: {
-        modelValue(v: any) {
-            this.Page = parseInt(v);
-        },
-        Page() {
-            this.loadPage();
-        },
-        filters: {
-            handler(v) {
-                if (parseInt(this.Page) !== 1) {
-                    this.Page = 1;
-                } else {
-                    this.Page = 1;
-                    this.loadPage();
-                }
-
-            },
-            deep: true
-        }
-    },
-    methods: {
-        loadPage() {
-            let d: LktObject = {};
-            if (typeof this.filters === 'object' && Object.keys(this.filters).length > 0) {
-                d = JSON.parse(JSON.stringify(this.filters));
-            }
-            for (let k in d) {
-                if (Array.isArray(d[k]) || typeof d[k] === 'object') {
-                    d[k] = JSON.stringify(d[k]);
-                }
-            }
-            d.page = this.Page;
-            this.$emit('update:modelValue', this.Page);
-            this.$emit('loading');
-            if (this.slaveMode) {
-                return;
-            }
-
-            let resource = getHTTPResource(this.resource);
-
-            httpCall(this.resource, d).then((r: any) => {
-                // @ts-ignore
-                let latestMaxPage = resource.getLatestMaxPage();
-                if (latestMaxPage > -1){
-                    this.MaxPage = latestMaxPage;
-                }
-                this.$emit('results', r);
-            }).catch((r: any) => {
-                this.$emit('error', r);
-            });
-        },
-        next() {
-            ++this.Page;
-        },
-        latest() {
-            this.Page = this.MaxPage;
-        },
-        prev() {
-            --this.Page;
-        },
-        first() {
-            this.Page = 1;
-        },
-        goTo(page: number) {
-            this.Page = page;
-        }
-    },
-    created() {
-        console.log('paginator created!!');
-        if (this.slaveMode) {
-            return;
-        }
-        this.loadPage();
-    }
-})
-</script>
-
-<style lang="scss" scoped>
-[data-lkt="paginator"] {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    > * {
-        margin-right: 5px;
-
-        &:last-child {
-            margin-right: 0;
-        }
-    }
-
-    [data-lkt="search-select"] {
-        width: 65px;
-    }
-}
-</style>
