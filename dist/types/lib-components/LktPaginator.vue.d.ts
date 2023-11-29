@@ -4,10 +4,6 @@ declare const _default: {
             type: NumberConstructor;
             default: number;
         };
-        maxPage: {
-            type: NumberConstructor;
-            default: number;
-        };
         resource: {
             type: StringConstructor;
             default: string;
@@ -31,10 +27,6 @@ declare const _default: {
         "onUpdate:modelValue"?: ((...args: any[]) => any) | undefined;
     }, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, ("error" | "loading" | "results" | "update:modelValue")[], import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps & Readonly<import("vue").ExtractPropTypes<{
         modelValue: {
-            type: NumberConstructor;
-            default: number;
-        };
-        maxPage: {
             type: NumberConstructor;
             default: number;
         };
@@ -63,7 +55,6 @@ declare const _default: {
         filters: Record<string, any>;
         resource: string;
         modelValue: number;
-        maxPage: number;
         palette: string;
         readOnly: boolean;
     }, true, {}, {}, {
@@ -75,10 +66,6 @@ declare const _default: {
         Defaults: {};
     }, Readonly<import("vue").ExtractPropTypes<{
         modelValue: {
-            type: NumberConstructor;
-            default: number;
-        };
-        maxPage: {
             type: NumberConstructor;
             default: number;
         };
@@ -107,7 +94,6 @@ declare const _default: {
         filters: Record<string, any>;
         resource: string;
         modelValue: number;
-        maxPage: number;
         palette: string;
         readOnly: boolean;
     }>;
@@ -116,10 +102,6 @@ declare const _default: {
     __isSuspense?: undefined;
 } & import("vue").ComponentOptionsBase<Readonly<import("vue").ExtractPropTypes<{
     modelValue: {
-        type: NumberConstructor;
-        default: number;
-    };
-    maxPage: {
         type: NumberConstructor;
         default: number;
     };
@@ -148,7 +130,6 @@ declare const _default: {
     filters: Record<string, any>;
     resource: string;
     modelValue: number;
-    maxPage: number;
     palette: string;
     readOnly: boolean;
 }, {}, string, {}> & import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps & (new () => {

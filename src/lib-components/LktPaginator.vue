@@ -14,7 +14,6 @@ const emit = defineEmits(['update:modelValue', 'loading', 'results', 'error']);
 
 const props = defineProps({
     modelValue: {type: Number, default: 1},
-    maxPage: {type: Number, default: 1},
     resource: {type: String, default: ''},
     palette: {type: String, default: ''},
     readOnly: {type: Boolean, default: false},
@@ -27,7 +26,7 @@ const props = defineProps({
 });
 
 const Page = ref(props.modelValue),
-    MaxPage = ref(props.maxPage);
+    MaxPage = ref(1);
 
 
 const firstButtonName = computed(() => Settings.FIRST_BUTTON_NAME),
@@ -90,7 +89,8 @@ const parseFilters = (filters: LktObject, page: number) => {
     return d;
 }
 
-let filtersDataState = new DataState(parseFilters(props.filters, Page.value));
+let filtersDataState = new DataState(parseFilters(props.filters, 0));
+if (Page.value > 0) filtersDataState.increment({page: Page.value});
 
 const loadPage = () => {
         if (props.readOnly || !filtersDataState.changed()) return;
@@ -101,8 +101,8 @@ const loadPage = () => {
         let resource = getHTTPResource(props.resource);
 
         httpCall(props.resource, d).then((r: any) => {
-            let latestMaxPage = resource.getLatestMaxPage();
-            if (latestMaxPage > -1) MaxPage.value = latestMaxPage;
+            let lastMaxPage = resource.getLatestMaxPage();
+            if (lastMaxPage > -1) MaxPage.value = lastMaxPage;
 
             filtersDataState.turnStoredIntoOriginal();
             emit('results', r);
@@ -123,7 +123,7 @@ watch(() => props.modelValue, (v) => {
     Page.value = parseInt(v);
 })
 watch(Page, (v) => {
-    filtersDataState.store(parseFilters(props.filters, v));
+    filtersDataState.increment({page: v});
     emit('update:modelValue', Page.value);
     loadPage();
 });
@@ -136,7 +136,7 @@ if (!props.readOnly) loadPage();
 </script>
 
 <template>
-    <div :class="classes">
+    <div :class="classes" v-if="MaxPage > 1">
         <lkt-button v-on:click="first" :disabled="disabledPrev" data-role="first" v-bind:palette="palette">
             <span>{{ firstButtonName }}</span>
         </lkt-button>
