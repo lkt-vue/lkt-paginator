@@ -13,7 +13,7 @@ export default {
     build: {
         lib: {
             entry: `${ src }/index.ts`,
-            name: 'LktButton',
+            name: 'LktPaginator',
             fileName: (format) => `lkt-paginator.${ format }.js`
         },
         outDir,
