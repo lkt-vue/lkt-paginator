@@ -1,3 +1,5 @@
+# LKT Paginator
+
 ![ts](https://img.shields.io/badge/Typescript-3178c6?style=for-the-badge)
 ![js](https://img.shields.io/badge/Javascript-f68333?style=for-the-badge)
 ![vue](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Flekrat%2Flkt-paginator%2Fmaster%2Fpackage.json&query=%24.dependencies.vue&style=for-the-badge&label=vue&color=42b883)
@@ -5,10 +7,10 @@
 
 LKT Paginator is a library for automatically load result pages from an HTTP API.
 
-# Requirements
+## Requirements
 - Work with [LKT HTTP Client](https://github.com/lekrat/lkt-http-client) resources.
 
-# Installation
+## Installation
 
 With npm
 
@@ -35,7 +37,7 @@ app.use(LktPaginator, {
 });
 ```
 
-# Usage
+## Usage
 
 ```typescript
 export default {
@@ -56,34 +58,33 @@ export default {
 <lkt-paginator v-model="page" :filters="filters" resource="get-results-resource"></lkt-paginator>
 ```
 
-## Props
-### v-model
+### Props
+#### v-model
 - Type: Integer
 
 Current page number.
 
-### filters
+#### filters
 - Type: Object
 
 Object keys will be passed as arguments to the resource.
 
-### resource
+#### resource
 - Type: String
 
 The resource name to be called.
 
-### palette
+#### palette
 - Type: String
 
 A palette name. It will add a new css selector, so you easily can have multiple styles.
 
-### readOnly
+#### readOnly
 - Type: Boolean
 
 If true, the paginator won't perform any HTTP call.
 
 
-# Stylesheet
+## Stylesheet
 
 This package includes one pure CSS stylesheet.
-
