@@ -8,7 +8,7 @@ import {computed, ref, watch} from "vue";
 import {Settings} from "../settings/Settings";
 import {DataState} from "lkt-data-state";
 import {LktObject} from "lkt-ts-interfaces";
-import {getHTTPResource, httpCall} from "lkt-http-client";
+import {httpCall} from "lkt-http-client";
 
 const emit = defineEmits(['update:modelValue', 'loading', 'results', 'error']);
 
@@ -98,14 +98,12 @@ const loadPage = () => {
         let d = filtersDataState.getData();
         emit('loading');
 
-        let resource = getHTTPResource(props.resource);
-
         httpCall(props.resource, d).then((r: any) => {
-            let lastMaxPage = resource.getLatestMaxPage();
+            let lastMaxPage = r.maxPage;
             if (lastMaxPage > -1) MaxPage.value = lastMaxPage;
 
             filtersDataState.turnStoredIntoOriginal();
-            emit('results', r);
+            emit('results', r.data);
 
         }).catch((r: any) => {
             emit('error', r);
