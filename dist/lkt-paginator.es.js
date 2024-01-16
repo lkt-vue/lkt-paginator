@@ -64,7 +64,7 @@ const K = { name: "LktPaginator", inheritAttrs: !1 }, Q = /* @__PURE__ */ X({
       m.increment({ page: e }), s("update:modelValue", r.value), _();
     }), g(() => o.filters, (e) => {
       m.store(O(e, r.value)), _();
-    }), o.readOnly || _(), (e, n) => {
+    }, { deep: !0 }), o.readOnly || _(), (e, n) => {
       const t = z("lkt-button");
       return N.value > 1 ? (T(), k("div", {
         key: 0,

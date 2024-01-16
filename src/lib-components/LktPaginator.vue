@@ -128,7 +128,7 @@ watch(Page, (v) => {
 watch(() => props.filters, (v) => {
     filtersDataState.store(parseFilters(v, Page.value))
     loadPage();
-});
+}, {deep: true});
 
 if (!props.readOnly) loadPage();
 </script>
