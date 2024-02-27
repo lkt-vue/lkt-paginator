@@ -3,6 +3,7 @@ import { App } from 'vue';
 import { InstallOptions } from './interfaces/InstallOptions';
 import { default as paginator } from './lib-components/LktPaginator.vue';
 import { Settings } from './settings/Settings';
+import "../lkt-paginator.css";
 
 const LktPaginator = {
   install: (app: App, options?: InstallOptions) => {
