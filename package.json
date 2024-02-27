@@ -1,6 +1,6 @@
 {
   "name": "lkt-paginator",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A library for automatically load result pages from an HTTP API",
   "keywords": [
     "lkt",
@@ -27,7 +27,7 @@
   "license": "MIT",
   "sideEffects": false,
   "scripts": {
-    "build": "rm -rf dist/*; vue-tsc --declaration --emitDeclarationOnly; vite build; cp build/* dist/"
+    "build": "rm -rf dist/*; vue-tsc --declaration --emitDeclarationOnly; vite build; tsc --project tsconfig.build.json; cp build/* dist/"
   },
   "author": "Antonio Ibáñez",
   "devDependencies": {
