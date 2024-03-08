@@ -19,7 +19,9 @@ declare const _default: import("vue").DefineComponent<{
         type: ObjectConstructor;
         default(): {};
     };
-}, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
+}, {
+    doRefresh: () => void;
+}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
     error: (...args: any[]) => void;
     loading: (...args: any[]) => void;
     results: (...args: any[]) => void;

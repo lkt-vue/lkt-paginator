@@ -1,7 +1,3 @@
-<script lang="ts">
-export default {name: "LktPaginator", inheritAttrs: false}
-</script>
-
 <script lang="ts" setup>
 
 import {computed, ref, watch} from "vue";
@@ -92,8 +88,8 @@ const parseFilters = (filters: LktObject, page: number) => {
 let filtersDataState = new DataState(parseFilters(props.filters, 0));
 if (Page.value > 0) filtersDataState.increment({page: Page.value});
 
-const loadPage = () => {
-        if (props.readOnly || !filtersDataState.changed()) return;
+const loadPage = (force: boolean = false) => {
+        if (!force && (props.readOnly || !filtersDataState.changed())) return;
 
         let d = filtersDataState.getData();
         emit('loading');
@@ -131,6 +127,10 @@ watch(() => props.filters, (v) => {
 }, {deep: true});
 
 if (!props.readOnly) loadPage();
+
+defineExpose({
+    doRefresh: () => loadPage(true),
+})
 </script>
 
 <template>
