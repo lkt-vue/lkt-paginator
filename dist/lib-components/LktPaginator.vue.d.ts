@@ -26,6 +26,7 @@ declare const _default: import("vue").DefineComponent<{
     loading: (...args: any[]) => void;
     results: (...args: any[]) => void;
     "update:modelValue": (...args: any[]) => void;
+    perms: (...args: any[]) => void;
 }, string, import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<{
     modelValue: {
         type: NumberConstructor;
@@ -52,6 +53,7 @@ declare const _default: import("vue").DefineComponent<{
     onLoading?: ((...args: any[]) => any) | undefined;
     onResults?: ((...args: any[]) => any) | undefined;
     "onUpdate:modelValue"?: ((...args: any[]) => any) | undefined;
+    onPerms?: ((...args: any[]) => any) | undefined;
 }, {
     filters: Record<string, any>;
     resource: string;

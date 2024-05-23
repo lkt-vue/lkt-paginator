@@ -1,11 +1,11 @@
-import { defineComponent as J, ref as h, computed as i, watch as g, resolveComponent as X, openBlock as v, createElementBlock as E, normalizeClass as z, createVNode as T, withCtx as d, createElementVNode as p, toDisplayString as c, Fragment as A, renderList as x, createBlock as C, createCommentVNode as $ } from "vue";
-import { DataState as q } from "lkt-data-state";
-import { httpCall as G } from "lkt-http-client";
-const m = class m {
+import { defineComponent as $, ref as g, computed as i, watch as E, resolveComponent as q, openBlock as T, createElementBlock as _, normalizeClass as G, createVNode as B, withCtx as d, createElementVNode as p, toDisplayString as c, Fragment as P, renderList as C, createBlock as M, createCommentVNode as H } from "vue";
+import { DataState as K } from "lkt-data-state";
+import { httpCall as Q } from "lkt-http-client";
+const N = class N {
 };
-m.FIRST_BUTTON_NAME = "First", m.PREV_BUTTON_NAME = "Prev", m.NEXT_BUTTON_NAME = "Next", m.LATEST_BUTTON_NAME = "Latest";
-let s = m;
-const H = /* @__PURE__ */ J({
+N.FIRST_BUTTON_NAME = "First", N.PREV_BUTTON_NAME = "Prev", N.NEXT_BUTTON_NAME = "Next", N.LATEST_BUTTON_NAME = "Latest";
+let o = N;
+const W = /* @__PURE__ */ $({
   __name: "LktPaginator",
   props: {
     modelValue: { type: Number, default: 1 },
@@ -19,145 +19,149 @@ const H = /* @__PURE__ */ J({
       }
     }
   },
-  emits: ["update:modelValue", "loading", "results", "error"],
-  setup(o, { expose: r, emit: M }) {
-    const B = M, u = o, l = h(u.modelValue), f = h(1), P = i(() => s.FIRST_BUTTON_NAME), V = i(() => s.PREV_BUTTON_NAME), U = i(() => s.NEXT_BUTTON_NAME), S = i(() => s.LATEST_BUTTON_NAME), L = i(() => {
+  emits: ["update:modelValue", "loading", "results", "error", "perms"],
+  setup(s, { expose: r, emit: V }) {
+    const v = V, u = s;
+    let U = [];
+    const l = g(u.modelValue), f = g(1), O = g(U), S = i(() => o.FIRST_BUTTON_NAME), L = i(() => o.PREV_BUTTON_NAME), R = i(() => o.NEXT_BUTTON_NAME), j = i(() => o.LATEST_BUTTON_NAME), F = i(() => {
       let t = [], n = l.value - 1, e = n - 5;
       e < 0 && (e = 0);
       for (let a = n; a > e; --a)
         t.push(a);
       return t = t.reverse(), t;
-    }), R = i(() => {
+    }), I = i(() => {
       let t = [], n = l.value + 5;
       n > f.value && (n = f.value);
       for (let e = l.value + 1; e <= n; ++e)
         t.push(e);
       return t;
-    }), y = i(() => l.value >= f.value), O = i(() => l.value <= 1), j = i(() => {
+    }), b = i(() => l.value >= f.value), A = i(() => l.value <= 1), D = i(() => {
       const t = ["lkt-paginator"];
       return u.palette && t.push(`lkt-paginator--${u.palette}`), u.readOnly && t.push("lkt-paginator--read-only"), t.push(u.modelValue && u.modelValue > 0 ? "is-filled" : "is-empty"), t.join(" ");
-    }), _ = (t, n) => {
+    }), h = (t, n) => {
       let e = {};
       typeof t == "object" && Object.keys(t).length > 0 && (e = JSON.parse(JSON.stringify(t)));
       for (let a in e)
         (Array.isArray(e[a]) || typeof e[a] == "object") && (e[a] = JSON.stringify(e[a]));
       return e.page = n, e;
     };
-    let N = new q(_(u.filters, 0));
-    l.value > 0 && N.increment({ page: l.value });
+    let m = new K(h(u.filters, 0));
+    l.value > 0 && m.increment({ page: l.value });
     const k = (t = !1) => {
-      if (!t && (u.readOnly || !N.changed()))
+      if (!t && (u.readOnly || !m.changed()))
         return;
-      let n = N.getData();
-      B("loading"), G(u.resource, n).then((e) => {
+      let n = m.getData();
+      v("loading"), Q(u.resource, n).then((e) => {
         let a = e.maxPage;
-        a > -1 && (f.value = a), N.turnStoredIntoOriginal(), B("results", e.data);
+        a > -1 && (f.value = a), m.turnStoredIntoOriginal(), v("results", e.data);
+        let y = e.perms;
+        Array.isArray(y) || (y = []), O.value = y, v("perms", O.value);
       }).catch((e) => {
-        B("error", e);
+        v("error", e);
       });
-    }, F = () => ++l.value, I = () => l.value = f.value, D = () => --l.value, w = () => l.value = 1, b = (t) => l.value = t;
-    return g(() => u.modelValue, (t) => {
+    }, w = () => ++l.value, J = () => l.value = f.value, X = () => --l.value, z = () => l.value = 1, x = (t) => l.value = t;
+    return E(() => u.modelValue, (t) => {
       l.value = parseInt(t);
-    }), g(l, (t) => {
-      N.increment({ page: t }), B("update:modelValue", l.value), k();
-    }), g(() => u.filters, (t) => {
-      N.store(_(t, l.value)), k();
+    }), E(l, (t) => {
+      m.increment({ page: t }), v("update:modelValue", l.value), k();
+    }), E(() => u.filters, (t) => {
+      m.store(h(t, l.value)), k();
     }, { deep: !0 }), u.readOnly || k(), r({
       doRefresh: () => k(!0)
     }), (t, n) => {
-      const e = X("lkt-button");
-      return f.value > 1 ? (v(), E("div", {
+      const e = q("lkt-button");
+      return f.value > 1 ? (T(), _("div", {
         key: 0,
-        class: z(j.value)
+        class: G(D.value)
       }, [
-        T(e, {
-          onClick: w,
-          disabled: O.value,
+        B(e, {
+          onClick: z,
+          disabled: A.value,
           "data-role": "first",
-          palette: o.palette
+          palette: s.palette
         }, {
           default: d(() => [
-            p("span", null, c(P.value), 1)
+            p("span", null, c(S.value), 1)
           ]),
           _: 1
         }, 8, ["disabled", "palette"]),
-        T(e, {
-          onClick: D,
-          disabled: O.value,
+        B(e, {
+          onClick: X,
+          disabled: A.value,
           "data-role": "prev",
-          palette: o.palette
+          palette: s.palette
         }, {
           default: d(() => [
-            p("span", null, c(V.value), 1)
+            p("span", null, c(L.value), 1)
           ]),
           _: 1
         }, 8, ["disabled", "palette"]),
-        (v(!0), E(A, null, x(L.value, (a) => (v(), C(e, {
+        (T(!0), _(P, null, C(F.value, (a) => (T(), M(e, {
           key: a,
           onClick: () => {
-            b(a);
+            x(a);
           },
           "data-role": "page",
-          palette: o.palette
+          palette: s.palette
         }, {
           default: d(() => [
             p("span", null, c(a), 1)
           ]),
           _: 2
         }, 1032, ["onClick", "palette"]))), 128)),
-        T(e, {
+        B(e, {
           disabled: "",
           "data-role": "page",
-          palette: o.palette
+          palette: s.palette
         }, {
           default: d(() => [
             p("span", null, c(l.value), 1)
           ]),
           _: 1
         }, 8, ["palette"]),
-        (v(!0), E(A, null, x(R.value, (a) => (v(), C(e, {
+        (T(!0), _(P, null, C(I.value, (a) => (T(), M(e, {
           key: a,
           onClick: () => {
-            b(a);
+            x(a);
           },
           "data-role": "page",
-          palette: o.palette
+          palette: s.palette
         }, {
           default: d(() => [
             p("span", null, c(a), 1)
           ]),
           _: 2
         }, 1032, ["onClick", "palette"]))), 128)),
-        T(e, {
-          onClick: F,
-          disabled: y.value,
+        B(e, {
+          onClick: w,
+          disabled: b.value,
           "data-role": "next",
-          palette: o.palette
+          palette: s.palette
         }, {
           default: d(() => [
-            p("span", null, c(U.value), 1)
+            p("span", null, c(R.value), 1)
           ]),
           _: 1
         }, 8, ["disabled", "palette"]),
-        T(e, {
-          onClick: I,
-          disabled: y.value,
+        B(e, {
+          onClick: J,
+          disabled: b.value,
           "data-role": "latest",
-          palette: o.palette
+          palette: s.palette
         }, {
           default: d(() => [
-            p("span", null, c(S.value), 1)
+            p("span", null, c(j.value), 1)
           ]),
           _: 1
         }, 8, ["disabled", "palette"])
-      ], 2)) : $("", !0);
+      ], 2)) : H("", !0);
     };
   }
-}), Y = {
-  install: (o, r) => {
-    o.component("lkt-paginator", H), r && r.firstButtonName && (s.FIRST_BUTTON_NAME = r.firstButtonName), r && r.prevButtonName && (s.PREV_BUTTON_NAME = r.prevButtonName), r && r.nextButtonName && (s.NEXT_BUTTON_NAME = r.nextButtonName), r && r.latestButtonName && (s.LATEST_BUTTON_NAME = r.latestButtonName);
+}), te = {
+  install: (s, r) => {
+    s.component("lkt-paginator", W), r && r.firstButtonName && (o.FIRST_BUTTON_NAME = r.firstButtonName), r && r.prevButtonName && (o.PREV_BUTTON_NAME = r.prevButtonName), r && r.nextButtonName && (o.NEXT_BUTTON_NAME = r.nextButtonName), r && r.latestButtonName && (o.LATEST_BUTTON_NAME = r.latestButtonName);
   }
 };
 export {
-  Y as default
+  te as default
 };

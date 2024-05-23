@@ -4,9 +4,9 @@ import {computed, ref, watch} from "vue";
 import {Settings} from "../settings/Settings";
 import {DataState} from "lkt-data-state";
 import {LktObject} from "lkt-ts-interfaces";
-import {httpCall} from "lkt-http-client";
+import {httpCall, HTTPResponse} from "lkt-http-client";
 
-const emit = defineEmits(['update:modelValue', 'loading', 'results', 'error']);
+const emit = defineEmits(['update:modelValue', 'loading', 'results', 'error', 'perms']);
 
 const props = defineProps({
     modelValue: {type: Number, default: 1},
@@ -21,8 +21,11 @@ const props = defineProps({
     }
 });
 
+let basePerms: string[] = [];
+
 const Page = ref(props.modelValue),
-    MaxPage = ref(1);
+    MaxPage = ref(1),
+    perms = ref(basePerms);
 
 
 const firstButtonName = computed(() => Settings.FIRST_BUTTON_NAME),
@@ -94,12 +97,17 @@ const loadPage = (force: boolean = false) => {
         let d = filtersDataState.getData();
         emit('loading');
 
-        httpCall(props.resource, d).then((r: any) => {
+        httpCall(props.resource, d).then((r: HTTPResponse) => {
             let lastMaxPage = r.maxPage;
             if (lastMaxPage > -1) MaxPage.value = lastMaxPage;
 
             filtersDataState.turnStoredIntoOriginal();
             emit('results', r.data);
+
+            let _perms = r.perms;
+            if (!Array.isArray(_perms)) _perms = [];
+            perms.value = _perms;
+            emit('perms', perms.value);
 
         }).catch((r: any) => {
             emit('error', r);
