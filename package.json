@@ -1,6 +1,6 @@
 {
   "name": "lkt-paginator",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "A library for automatically load result pages from an HTTP API",
   "keywords": [
     "lkt",
@@ -20,10 +20,16 @@
     ".": {
       "import": "./dist/build.js"
     },
-    "./styles": "./dist/style.css"
+    "./styles": "./dist/style.css",
+    "./theme": "./theme/default.css",
+    "./theme/default": "./theme/default.css"
   },
   "types": "./dist/index.d.ts",
-  "files": ["dist/*", "src/**/*.vue"],
+  "files": [
+    "dist/*",
+    "src/**/*.vue",
+    "theme/**/*.css"
+  ],
   "license": "MIT",
   "sideEffects": false,
   "scripts": {

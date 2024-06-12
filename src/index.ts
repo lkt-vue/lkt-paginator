@@ -1,30 +1,25 @@
-import { App } from 'vue';
-
-import { InstallOptions } from './interfaces/InstallOptions';
-import { default as paginator } from './lib-components/LktPaginator.vue';
-import { Settings } from './settings/Settings';
-import "../lkt-paginator.css";
+import {App} from 'vue';
+import {default as paginator} from './lib-components/LktPaginator.vue';
+import {Settings} from './settings/Settings';
+import "../style.css";
 
 const LktPaginator = {
-  install: (app: App, options?: InstallOptions) => {
+  install: (app: App) => {
     app.component('lkt-paginator', paginator);
-
-    if (options && options.firstButtonName) {
-      Settings.FIRST_BUTTON_NAME = options.firstButtonName;
-    }
-
-    if (options && options.prevButtonName) {
-      Settings.PREV_BUTTON_NAME = options.prevButtonName;
-    }
-
-    if (options && options.nextButtonName) {
-      Settings.NEXT_BUTTON_NAME = options.nextButtonName;
-    }
-
-    if (options && options.latestButtonName) {
-      Settings.LATEST_BUTTON_NAME = options.latestButtonName;
-    }
   },
 };
 
 export default LktPaginator;
+
+export const setDefaultPageSlot = (str: string, component?: string|Component) => {
+  Settings.defaultPageSlot = str;
+
+  if (component) Settings.pageSlots[str] = component;
+}
+
+export const setDefaultPageButtonTexts = (prev: string = 'Prev', next: string = 'Next', first: string = 'First', latest: 'Latest') => {
+  Settings.firstButtonName = first;
+  Settings.prevButtonName = prev;
+  Settings.nextButtonName = next;
+  Settings.latestButtonName = latest;
+}

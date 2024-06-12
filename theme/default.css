@@ -1,0 +1,24 @@
+:root {
+
+    /** Grid */
+    --lkt-paginator-justify-content: center;
+
+    /** Sizing */
+    --lkt-paginator-gap: 10px;
+
+    --lkt-paginator-number-page-min-width: 35px;
+    --lkt-paginator-number-page-min-height: 35px;
+
+    --lkt-paginator-symbol-page-min-width: 35px;
+    --lkt-paginator-symbol-page-min-height: 35px;
+
+    /** Colors */
+    --lkt-paginator-color: #ffffff;
+    --lkt-paginator-bg: #007ebc;
+    --lkt-paginator-border-color: #ddd;
+
+    /** State: hover */
+    --lkt-paginator-color-hover: #ffffff;
+    --lkt-paginator-bg-hover: #007ebc;
+    --lkt-paginator-border-color-hover: #ddd;
+}

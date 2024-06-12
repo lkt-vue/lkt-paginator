@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-
 import {computed, ref, watch} from "vue";
 import {Settings} from "../settings/Settings";
 import {DataState} from "lkt-data-state";
@@ -8,17 +7,20 @@ import {httpCall, HTTPResponse} from "lkt-http-client";
 
 const emit = defineEmits(['update:modelValue', 'loading', 'results', 'error', 'perms']);
 
-const props = defineProps({
-    modelValue: {type: Number, default: 1},
-    resource: {type: String, default: ''},
-    palette: {type: String, default: ''},
-    readOnly: {type: Boolean, default: false},
-    filters: {
-        type: Object,
-        default() {
-            return {};
-        }
-    }
+const props = withDefaults(defineProps<{
+    modelValue: number,
+    class: string,
+    resource: string,
+    palette: string,
+    readOnly: boolean,
+    filters: LktObject,
+}>(), {
+    modelValue: 1,
+    class: '',
+    resource: '',
+    palette: '',
+    readOnly: false,
+    filters: () => ({})
 });
 
 let basePerms: string[] = [];
@@ -28,10 +30,10 @@ const Page = ref(props.modelValue),
     perms = ref(basePerms);
 
 
-const firstButtonName = computed(() => Settings.FIRST_BUTTON_NAME),
-    prevButtonName = computed(() => Settings.PREV_BUTTON_NAME),
-    nextButtonName = computed(() => Settings.NEXT_BUTTON_NAME),
-    latestButtonName = computed(() => Settings.LATEST_BUTTON_NAME),
+const firstButtonName = computed(() => Settings.firstButtonName),
+    prevButtonName = computed(() => Settings.prevButtonName),
+    nextButtonName = computed(() => Settings.nextButtonName),
+    latestButtonName = computed(() => Settings.latestButtonName),
     previousPages = computed(() => {
         let r = [];
         let j: number = Page.value - 1;
@@ -139,35 +141,56 @@ if (!props.readOnly) loadPage();
 defineExpose({
     doRefresh: () => loadPage(true),
 })
+
+const hasCustomPageSlot = computed(() => {
+        return Settings.defaultPageSlot !== '' && typeof Settings.pageSlots[Settings.defaultPageSlot] !== 'undefined';
+    }),
+    customPageSlot = computed(() => {
+        return Settings.pageSlots[Settings.defaultPageSlot];
+    });
 </script>
 
 <template>
     <div :class="classes" v-if="MaxPage > 1">
-        <lkt-button v-on:click="first" :disabled="disabledPrev" data-role="first" v-bind:palette="palette">
-            <span>{{ firstButtonName }}</span>
+        <lkt-button class="symbol-page" v-on:click="first" :disabled="disabledPrev" data-role="first" v-bind:palette="palette">
+            <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
+                       v-bind:page="'first'" :title="firstButtonName"></component>
+            <span v-else>{{ firstButtonName }}</span>
         </lkt-button>
-        <lkt-button v-on:click="prev" :disabled="disabledPrev" data-role="prev" v-bind:palette="palette">
-            <span>{{ prevButtonName }}</span>
+        <lkt-button class="symbol-page" v-on:click="prev" :disabled="disabledPrev" data-role="prev" v-bind:palette="palette">
+            <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
+                       v-bind:page="'prev'" :title="prevButtonName"></component>
+            <span v-else>{{ prevButtonName }}</span>
         </lkt-button>
 
-        <lkt-button v-for="page in previousPages" :key="page" v-on:click="() => {goTo(page)}"
+        <lkt-button class="number-page" v-for="page in previousPages" :key="page" v-on:click="() => {goTo(page)}"
                     data-role="page" v-bind:palette="palette">
-            <span>{{ page }}</span>
+            <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
+                       v-bind:page="page" :title="page"></component>
+            <span v-else>{{ page }}</span>
         </lkt-button>
 
-        <lkt-button disabled data-role="page" v-bind:palette="palette">
-            <span>{{ Page }}</span>
+        <lkt-button class="number-page" disabled data-role="page" v-bind:palette="palette">
+            <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
+                       v-bind:page="Page" :title="Page"></component>
+            <span v-else>{{ Page }}</span>
         </lkt-button>
 
-        <lkt-button v-for="page in nextPages" :key="page" v-on:click="() => {goTo(page)}"
+        <lkt-button class="number-page" v-for="page in nextPages" :key="page" v-on:click="() => {goTo(page)}"
                     data-role="page" v-bind:palette="palette">
-            <span>{{ page }}</span>
+            <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
+                       v-bind:page="page" :title="page"></component>
+            <span v-else>{{ page }}</span>
         </lkt-button>
-        <lkt-button v-on:click="next" :disabled="disabledNext" data-role="next" v-bind:palette="palette">
-            <span>{{ nextButtonName }}</span>
+        <lkt-button class="symbol-page" v-on:click="next" :disabled="disabledNext" data-role="next" v-bind:palette="palette">
+            <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
+                       v-bind:page="'next'" :title="nextButtonName"></component>
+            <span v-else>{{ nextButtonName }}</span>
         </lkt-button>
-        <lkt-button v-on:click="latest" :disabled="disabledNext" data-role="latest" v-bind:palette="palette">
-            <span>{{ latestButtonName }}</span>
+        <lkt-button class="symbol-page" v-on:click="latest" :disabled="disabledNext" data-role="latest" v-bind:palette="palette">
+            <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
+                       v-bind:page="'latest'" :title="latestButtonName"></component>
+            <span v-else>{{ latestButtonName }}</span>
         </lkt-button>
     </div>
 </template>
