@@ -94,6 +94,8 @@ let filtersDataState = new DataState(parseFilters(props.filters, 0));
 if (Page.value > 0) filtersDataState.increment({page: Page.value});
 
 const loadPage = (force: boolean = false) => {
+
+        if (!props.resource) return;
         if (!force && (props.readOnly || !filtersDataState.changed())) return;
 
         let d = filtersDataState.getData();

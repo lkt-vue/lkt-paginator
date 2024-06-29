@@ -1,14 +1,14 @@
 import { defineComponent as H, ref as S, computed as r, watch as C, resolveComponent as K, openBlock as s, createElementBlock as i, normalizeClass as Q, createVNode as _, withCtx as c, createBlock as p, resolveDynamicComponent as g, toDisplayString as y, Fragment as J, renderList as I, createCommentVNode as U } from "vue";
 import { DataState as W } from "lkt-data-state";
 import { httpCall as X } from "lkt-http-client";
-const o = {
+const u = {
   firstButtonName: "First",
   prevButtonName: "Prev",
   nextButtonName: "Next",
   latestButtonName: "Latest",
   defaultPageSlot: "",
   pageSlots: {}
-}, Y = { key: 1 }, Z = { key: 1 }, ee = { key: 1 }, te = { key: 1 }, ae = { key: 1 }, le = { key: 1 }, se = { key: 1 }, oe = /* @__PURE__ */ H({
+}, Y = { key: 1 }, Z = { key: 1 }, ee = { key: 1 }, te = { key: 1 }, ae = { key: 1 }, le = { key: 1 }, se = { key: 1 }, ue = /* @__PURE__ */ H({
   __name: "LktPaginator",
   props: {
     modelValue: { default: 1 },
@@ -20,9 +20,9 @@ const o = {
   },
   emits: ["update:modelValue", "loading", "results", "error", "perms"],
   setup(d, { expose: k, emit: P }) {
-    const v = P, u = d;
+    const v = P, o = d;
     let M = [];
-    const l = S(u.modelValue), b = S(1), x = S(M), O = r(() => o.firstButtonName), V = r(() => o.prevButtonName), D = r(() => o.nextButtonName), j = r(() => o.latestButtonName), T = r(() => {
+    const l = S(o.modelValue), b = S(1), x = S(M), O = r(() => u.firstButtonName), V = r(() => u.prevButtonName), D = r(() => u.nextButtonName), j = r(() => u.latestButtonName), T = r(() => {
       let e = [], n = l.value - 1, t = n - 5;
       t < 0 && (t = 0);
       for (let a = n; a > t; --a)
@@ -36,7 +36,7 @@ const o = {
       return e;
     }), A = r(() => l.value >= b.value), F = r(() => l.value <= 1), E = r(() => {
       const e = ["lkt-paginator"];
-      return u.palette && e.push(`lkt-paginator--${u.palette}`), u.readOnly && e.push("lkt-paginator--read-only"), e.push(u.modelValue && u.modelValue > 0 ? "is-filled" : "is-empty"), e.join(" ");
+      return o.palette && e.push(`lkt-paginator--${o.palette}`), o.readOnly && e.push("lkt-paginator--read-only"), e.push(o.modelValue && o.modelValue > 0 ? "is-filled" : "is-empty"), e.join(" ");
     }), L = (e, n) => {
       let t = {};
       typeof e == "object" && Object.keys(e).length > 0 && (t = JSON.parse(JSON.stringify(e)));
@@ -44,13 +44,13 @@ const o = {
         (Array.isArray(t[a]) || typeof t[a] == "object") && (t[a] = JSON.stringify(t[a]));
       return t.page = n, t;
     };
-    let N = new W(L(u.filters, 0));
+    let N = new W(L(o.filters, 0));
     l.value > 0 && N.increment({ page: l.value });
     const h = (e = !1) => {
-      if (!e && (u.readOnly || !N.changed()))
+      if (!o.resource || !e && (o.readOnly || !N.changed()))
         return;
       let n = N.getData();
-      v("loading"), X(u.resource, n).then((t) => {
+      v("loading"), X(o.resource, n).then((t) => {
         let a = t.maxPage;
         a > -1 && (b.value = a), N.turnStoredIntoOriginal(), v("results", t.data);
         let B = t.perms;
@@ -59,16 +59,16 @@ const o = {
         v("error", t);
       });
     }, R = () => ++l.value, $ = () => l.value = b.value, q = () => --l.value, G = () => l.value = 1, w = (e) => l.value = e;
-    C(() => u.modelValue, (e) => {
+    C(() => o.modelValue, (e) => {
       l.value = parseInt(e);
     }), C(l, (e) => {
       N.increment({ page: e }), v("update:modelValue", l.value), h();
-    }), C(() => u.filters, (e) => {
+    }), C(() => o.filters, (e) => {
       N.store(L(e, l.value)), h();
-    }, { deep: !0 }), u.readOnly || h(), k({
+    }, { deep: !0 }), o.readOnly || h(), k({
       doRefresh: () => h(!0)
     });
-    const m = r(() => o.defaultPageSlot !== "" && typeof o.pageSlots[o.defaultPageSlot] < "u"), f = r(() => o.pageSlots[o.defaultPageSlot]);
+    const m = r(() => u.defaultPageSlot !== "" && typeof u.pageSlots[u.defaultPageSlot] < "u"), f = r(() => u.pageSlots[u.defaultPageSlot]);
     return (e, n) => {
       const t = K("lkt-button");
       return b.value > 1 ? (s(), i("div", {
@@ -195,12 +195,12 @@ const o = {
   }
 }), ie = {
   install: (d) => {
-    d.component("lkt-paginator", oe);
+    d.component("lkt-paginator", ue);
   }
 }, pe = (d, k) => {
-  o.defaultPageSlot = d, k && (o.pageSlots[d] = k);
+  u.defaultPageSlot = d, k && (u.pageSlots[d] = k);
 }, de = (d = "Prev", k = "Next", P = "First", v) => {
-  o.firstButtonName = P, o.prevButtonName = d, o.nextButtonName = k, o.latestButtonName = v;
+  u.firstButtonName = P, u.prevButtonName = d, u.nextButtonName = k, u.latestButtonName = v;
 };
 export {
   ie as default,
