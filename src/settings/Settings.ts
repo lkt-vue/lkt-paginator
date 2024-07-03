@@ -1,3 +1,7 @@
+import {LktObject} from "lkt-ts-interfaces";
+
+let pageSlots: LktObject = {};
+
 export const Settings = {
     firstButtonName: 'First',
     prevButtonName: 'Prev',
@@ -6,5 +10,5 @@ export const Settings = {
 
     defaultPageSlot: '',
 
-    pageSlots: {},
+    pageSlots,
 }

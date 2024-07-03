@@ -1,4 +1,4 @@
-import { App } from 'vue';
+import { App, Component } from 'vue';
 import "../style.css";
 declare const LktPaginator: {
     install: (app: App) => void;

@@ -17,10 +17,12 @@ declare const _default: import("vue").DefineComponent<__VLS_WithDefaults<__VLS_T
     doRefresh: () => void;
 }, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
     error: (...args: any[]) => void;
+    custom: (...args: any[]) => void;
     loading: (...args: any[]) => void;
     results: (...args: any[]) => void;
     "update:modelValue": (...args: any[]) => void;
     perms: (...args: any[]) => void;
+    response: (...args: any[]) => void;
 }, string, import("vue").PublicProps, Readonly<import("vue").ExtractPropTypes<__VLS_WithDefaults<__VLS_TypePropsToRuntimeProps<{
     modelValue: number;
     class: string;
@@ -37,10 +39,12 @@ declare const _default: import("vue").DefineComponent<__VLS_WithDefaults<__VLS_T
     filters: () => {};
 }>>> & {
     onError?: ((...args: any[]) => any) | undefined;
+    onCustom?: ((...args: any[]) => any) | undefined;
     onLoading?: ((...args: any[]) => any) | undefined;
     onResults?: ((...args: any[]) => any) | undefined;
     "onUpdate:modelValue"?: ((...args: any[]) => any) | undefined;
     onPerms?: ((...args: any[]) => any) | undefined;
+    onResponse?: ((...args: any[]) => any) | undefined;
 }, {
     class: string;
     filters: LktObject;

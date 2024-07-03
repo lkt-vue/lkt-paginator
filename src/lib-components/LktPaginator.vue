@@ -5,7 +5,7 @@ import {DataState} from "lkt-data-state";
 import {LktObject} from "lkt-ts-interfaces";
 import {httpCall, HTTPResponse} from "lkt-http-client";
 
-const emit = defineEmits(['update:modelValue', 'loading', 'results', 'error', 'perms']);
+const emit = defineEmits(['update:modelValue', 'loading', 'results', 'error', 'perms', 'response', 'custom']);
 
 const props = withDefaults(defineProps<{
     modelValue: number,
@@ -112,6 +112,8 @@ const loadPage = (force: boolean = false) => {
             if (!Array.isArray(_perms)) _perms = [];
             perms.value = _perms;
             emit('perms', perms.value);
+            emit('custom', r.custom);
+            emit('response', r);
 
         }).catch((r: any) => {
             emit('error', r);

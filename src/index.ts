@@ -1,4 +1,4 @@
-import {App} from 'vue';
+import {App, Component} from 'vue';
 import {default as paginator} from './lib-components/LktPaginator.vue';
 import {Settings} from './settings/Settings';
 import "../style.css";
