@@ -65,7 +65,7 @@ const o = {
     }), C(l, (e) => {
       N.increment({ page: e }), p("update:modelValue", l.value), h();
     }), C(() => u.filters, (e) => {
-      N.store(L(e, l.value)), h();
+      l.value = 1, N.store(L(e, l.value)), h();
     }, { deep: !0 }), u.readOnly || h(), k({
       doRefresh: () => h(!0)
     });

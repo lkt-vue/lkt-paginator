@@ -136,6 +136,7 @@ watch(Page, (v) => {
     loadPage();
 });
 watch(() => props.filters, (v) => {
+    Page.value = 1;
     filtersDataState.store(parseFilters(v, Page.value))
     loadPage();
 }, {deep: true});
