@@ -1,210 +1,221 @@
-import { defineComponent as H, ref as S, computed as r, watch as C, resolveComponent as K, openBlock as s, createElementBlock as i, normalizeClass as Q, createVNode as _, withCtx as f, createBlock as d, resolveDynamicComponent as g, toDisplayString as y, Fragment as J, renderList as I, createCommentVNode as U } from "vue";
-import { DataState as W } from "lkt-data-state";
-import { httpCall as X } from "lkt-http-client";
-let Y = {};
-const o = {
+import { defineComponent as W, mergeDefaults as X, ref as B, watch as N, computed as n, resolveComponent as Y, createElementBlock as p, createCommentVNode as C, openBlock as l, normalizeClass as Z, createBlock as i, createVNode as V, withCtx as g, resolveDynamicComponent as f, toDisplayString as y, Fragment as M, renderList as R } from "vue";
+import { DataState as $ } from "lkt-data-state";
+import { httpCall as ee } from "lkt-http-client";
+import { PaginatorType as te, getDefaultValues as ae, Paginator as le } from "lkt-vue-kernel";
+let oe = {};
+const s = {
   firstButtonName: "First",
   prevButtonName: "Prev",
   nextButtonName: "Next",
   latestButtonName: "Latest",
   defaultPageSlot: "",
-  pageSlots: Y
-}, Z = { key: 1 }, ee = { key: 1 }, te = { key: 1 }, ae = { key: 1 }, le = { key: 1 }, se = { key: 1 }, oe = { key: 1 }, ue = /* @__PURE__ */ H({
+  pageSlots: oe
+}, se = { key: 1 }, ue = { key: 1 }, ne = { key: 1 }, re = { key: 1 }, ie = { key: 1 }, de = { key: 1 }, pe = { key: 1 }, ve = /* @__PURE__ */ W({
   __name: "LktPaginator",
-  props: {
-    modelValue: { default: 1 },
-    class: { default: "" },
-    resource: { default: "" },
-    palette: { default: "" },
-    readOnly: { type: Boolean, default: !1 },
-    filters: { default: () => ({}) }
-  },
-  emits: ["update:modelValue", "loading", "results", "error", "perms", "response", "custom"],
-  setup(v, { expose: k, emit: P }) {
-    const p = P, u = v;
-    let M = [];
-    const l = S(u.modelValue), b = S(1), x = S(M), O = r(() => o.firstButtonName), V = r(() => o.prevButtonName), D = r(() => o.nextButtonName), j = r(() => o.latestButtonName), T = r(() => {
-      let e = [], n = l.value - 1, t = n - 5;
-      t < 0 && (t = 0);
-      for (let a = n; a > t; --a)
-        e.push(a);
-      return e = e.reverse(), e;
-    }), z = r(() => {
-      let e = [], n = l.value + 5;
-      n > b.value && (n = b.value);
-      for (let t = l.value + 1; t <= n; ++t)
-        e.push(t);
-      return e;
-    }), A = r(() => l.value >= b.value), F = r(() => l.value <= 1), E = r(() => {
-      const e = ["lkt-paginator"];
-      return u.palette && e.push(`lkt-paginator--${u.palette}`), u.readOnly && e.push("lkt-paginator--read-only"), e.push(u.modelValue && u.modelValue > 0 ? "is-filled" : "is-empty"), e.join(" ");
-    }), L = (e, n) => {
-      let t = {};
-      typeof e == "object" && Object.keys(e).length > 0 && (t = JSON.parse(JSON.stringify(e)));
-      for (let a in t)
-        (Array.isArray(t[a]) || typeof t[a] == "object") && (t[a] = JSON.stringify(t[a]));
-      return t.page = n, t;
-    };
-    let N = new W(L(u.filters, 0));
-    l.value > 0 && N.increment({ page: l.value });
-    const h = (e = !1) => {
-      if (!u.resource || !e && (u.readOnly || !N.changed()))
-        return;
-      let n = N.getData();
-      p("loading"), X(u.resource, n).then((t) => {
-        let a = t.maxPage;
-        a > -1 && (b.value = a), N.turnStoredIntoOriginal(), p("results", t.data);
-        let B = t.perms;
-        Array.isArray(B) || (B = []), x.value = B, p("perms", x.value), p("custom", t.custom), p("response", t);
-      }).catch((t) => {
-        p("error", t);
-      });
-    }, R = () => ++l.value, $ = () => l.value = b.value, q = () => --l.value, G = () => l.value = 1, w = (e) => l.value = e;
-    C(() => u.modelValue, (e) => {
-      l.value = parseInt(e);
-    }), C(l, (e) => {
-      N.increment({ page: e }), p("update:modelValue", l.value), h();
-    }), C(() => u.filters, (e) => {
-      l.value = 1, N.store(L(e, l.value)), h();
-    }, { deep: !0 }), u.readOnly || h(), k({
-      doRefresh: () => h(!0)
+  props: /* @__PURE__ */ X({
+    type: {},
+    modelValue: {},
+    class: {},
+    resource: {},
+    readOnly: { type: Boolean },
+    loading: { type: Boolean },
+    filters: {}
+  }, ae(le)),
+  emits: [
+    "update:modelValue",
+    "update:loading",
+    "loading",
+    "results",
+    "error",
+    "perms",
+    "response",
+    "custom"
+  ],
+  setup(v, { expose: k, emit: h }) {
+    const d = h, u = v;
+    let z = [];
+    const o = B(u.modelValue), _ = B(1), D = B(z), x = B(u.loading);
+    N(() => u.loading, (t) => {
+      x.value = t;
+    }), N(x, (t) => {
+      d("update:loading", t);
     });
-    const m = r(() => o.defaultPageSlot !== "" && typeof o.pageSlots[o.defaultPageSlot] < "u"), c = r(() => o.pageSlots[o.defaultPageSlot]);
-    return (e, n) => {
-      const t = K("lkt-button");
-      return b.value > 1 ? (s(), i("div", {
+    const O = n(() => s.firstButtonName), L = n(() => s.prevButtonName), F = n(() => s.nextButtonName), j = n(() => s.latestButtonName), E = n(() => {
+      let t = [], r = o.value - 1, e = r - 5;
+      e < 0 && (e = 0);
+      for (let a = r; a > e; --a) t.push(a);
+      return t = t.reverse(), t;
+    }), q = n(() => {
+      let t = [], r = o.value + 5;
+      r > _.value && (r = _.value);
+      for (let e = o.value + 1; e <= r; ++e) t.push(e);
+      return t;
+    }), A = n(() => o.value >= _.value), w = n(() => o.value <= 1), G = n(() => {
+      const t = ["lkt-paginator"];
+      return u.readOnly && t.push("lkt-paginator--read-only"), t.push(u.modelValue && u.modelValue > 0 ? "is-filled" : "is-empty"), t.join(" ");
+    }), J = (t, r) => {
+      let e = {};
+      typeof t == "object" && Object.keys(t).length > 0 && (e = JSON.parse(JSON.stringify(t)));
+      for (let a in e)
+        (Array.isArray(e[a]) || typeof e[a] == "object") && (e[a] = JSON.stringify(e[a]));
+      return e.page = r, e;
+    };
+    let P = new $(J(u.filters, 0));
+    o.value > 0 && P.increment({ page: o.value });
+    const b = (t = !1) => {
+      if (!u.resource || !t && (u.readOnly || !P.changed())) return;
+      let r = P.getData();
+      x.value = !0, d("loading"), ee(u.resource, r).then((e) => {
+        let a = e.maxPage;
+        a > -1 && (_.value = a), P.turnStoredIntoOriginal(), d("results", e.data);
+        let S = e.perms;
+        Array.isArray(S) || (S = []), D.value = S, d("perms", D.value), d("custom", e.custom), d("response", e);
+      }).catch((e) => {
+        d("error", e);
+      });
+    }, H = () => ++o.value, K = () => o.value = _.value, Q = () => --o.value, U = () => o.value = 1, T = (t) => o.value = t;
+    N(() => u.modelValue, (t) => {
+      o.value = parseInt(t);
+    }), N(o, (t) => {
+      P.increment({ page: t }), d("update:modelValue", o.value), b();
+    }), N(() => u.filters, (t) => {
+      o.value = 1, P.store(J(t, o.value)), b();
+    }, { deep: !0 }), u.readOnly || b(), k({
+      doRefresh: () => b(!0)
+    });
+    const c = n(() => s.defaultPageSlot !== "" && typeof s.pageSlots[s.defaultPageSlot] < "u"), m = n(() => s.pageSlots[s.defaultPageSlot]), I = n(() => [
+      te.PagesPrevNextFirstLast
+    ].includes(u.type));
+    return (t, r) => {
+      const e = Y("lkt-button");
+      return _.value > 1 ? (l(), p("div", {
         key: 0,
-        class: Q(E.value)
+        class: Z(G.value)
       }, [
-        _(t, {
+        I.value ? (l(), i(e, {
+          key: 0,
           class: "symbol-page",
-          onClick: G,
-          disabled: F.value,
-          "data-role": "first",
-          palette: e.palette
+          onClick: U,
+          disabled: w.value,
+          "data-role": "first"
         }, {
-          default: f(() => [
-            m.value ? (s(), d(g(c.value), {
+          default: g(() => [
+            c.value ? (l(), i(f(m.value), {
               key: 0,
               page: "first",
               title: O.value
-            }, null, 8, ["title"])) : (s(), i("span", Z, y(O.value), 1))
+            }, null, 8, ["title"])) : (l(), p("span", se, y(O.value), 1))
           ]),
           _: 1
-        }, 8, ["disabled", "palette"]),
-        _(t, {
+        }, 8, ["disabled"])) : C("", !0),
+        V(e, {
           class: "symbol-page",
-          onClick: q,
-          disabled: F.value,
-          "data-role": "prev",
-          palette: e.palette
+          onClick: Q,
+          disabled: w.value,
+          "data-role": "prev"
         }, {
-          default: f(() => [
-            m.value ? (s(), d(g(c.value), {
+          default: g(() => [
+            c.value ? (l(), i(f(m.value), {
               key: 0,
               page: "prev",
-              title: V.value
-            }, null, 8, ["title"])) : (s(), i("span", ee, y(V.value), 1))
+              title: L.value
+            }, null, 8, ["title"])) : (l(), p("span", ue, y(L.value), 1))
           ]),
           _: 1
-        }, 8, ["disabled", "palette"]),
-        (s(!0), i(J, null, I(T.value, (a) => (s(), d(t, {
-          class: "number-page",
+        }, 8, ["disabled"]),
+        (l(!0), p(M, null, R(E.value, (a) => (l(), i(e, {
           key: a,
           onClick: () => {
-            w(a);
+            T(a);
           },
-          "data-role": "page",
-          palette: e.palette
+          class: "number-page",
+          "data-role": "page"
         }, {
-          default: f(() => [
-            m.value ? (s(), d(g(c.value), {
+          default: g(() => [
+            c.value ? (l(), i(f(m.value), {
               key: 0,
               page: a,
               title: a
-            }, null, 8, ["page", "title"])) : (s(), i("span", te, y(a), 1))
+            }, null, 8, ["page", "title"])) : (l(), p("span", ne, y(a), 1))
           ]),
           _: 2
-        }, 1032, ["onClick", "palette"]))), 128)),
-        _(t, {
+        }, 1032, ["onClick"]))), 128)),
+        V(e, {
           class: "number-page",
           disabled: "",
-          "data-role": "page",
-          palette: e.palette
+          "data-role": "page"
         }, {
-          default: f(() => [
-            m.value ? (s(), d(g(c.value), {
+          default: g(() => [
+            c.value ? (l(), i(f(m.value), {
               key: 0,
-              page: l.value,
-              title: l.value
-            }, null, 8, ["page", "title"])) : (s(), i("span", ae, y(l.value), 1))
+              page: o.value,
+              title: o.value
+            }, null, 8, ["page", "title"])) : (l(), p("span", re, y(o.value), 1))
           ]),
           _: 1
-        }, 8, ["palette"]),
-        (s(!0), i(J, null, I(z.value, (a) => (s(), d(t, {
+        }),
+        (l(!0), p(M, null, R(q.value, (a) => (l(), i(e, {
           class: "number-page",
           key: a,
           onClick: () => {
-            w(a);
+            T(a);
           },
-          "data-role": "page",
-          palette: e.palette
+          "data-role": "page"
         }, {
-          default: f(() => [
-            m.value ? (s(), d(g(c.value), {
+          default: g(() => [
+            c.value ? (l(), i(f(m.value), {
               key: 0,
               page: a,
               title: a
-            }, null, 8, ["page", "title"])) : (s(), i("span", le, y(a), 1))
+            }, null, 8, ["page", "title"])) : (l(), p("span", ie, y(a), 1))
           ]),
           _: 2
-        }, 1032, ["onClick", "palette"]))), 128)),
-        _(t, {
+        }, 1032, ["onClick"]))), 128)),
+        V(e, {
           class: "symbol-page",
-          onClick: R,
+          onClick: H,
           disabled: A.value,
-          "data-role": "next",
-          palette: e.palette
+          "data-role": "next"
         }, {
-          default: f(() => [
-            m.value ? (s(), d(g(c.value), {
+          default: g(() => [
+            c.value ? (l(), i(f(m.value), {
               key: 0,
               page: "next",
-              title: D.value
-            }, null, 8, ["title"])) : (s(), i("span", se, y(D.value), 1))
+              title: F.value
+            }, null, 8, ["title"])) : (l(), p("span", de, y(F.value), 1))
           ]),
           _: 1
-        }, 8, ["disabled", "palette"]),
-        _(t, {
+        }, 8, ["disabled"]),
+        I.value ? (l(), i(e, {
+          key: 1,
           class: "symbol-page",
-          onClick: $,
+          onClick: K,
           disabled: A.value,
-          "data-role": "latest",
-          palette: e.palette
+          "data-role": "latest"
         }, {
-          default: f(() => [
-            m.value ? (s(), d(g(c.value), {
+          default: g(() => [
+            c.value ? (l(), i(f(m.value), {
               key: 0,
               page: "latest",
               title: j.value
-            }, null, 8, ["title"])) : (s(), i("span", oe, y(j.value), 1))
+            }, null, 8, ["title"])) : (l(), p("span", pe, y(j.value), 1))
           ]),
           _: 1
-        }, 8, ["disabled", "palette"])
-      ], 2)) : U("", !0);
+        }, 8, ["disabled"])) : C("", !0)
+      ], 2)) : C("", !0);
     };
   }
-}), pe = {
+}), ye = {
   install: (v) => {
-    v.component("lkt-paginator", ue);
+    v.component("lkt-paginator", ve);
   }
-}, de = (v, k) => {
-  o.defaultPageSlot = v, k && (o.pageSlots[v] = k);
-}, ve = (v = "Prev", k = "Next", P = "First", p) => {
-  o.firstButtonName = P, o.prevButtonName = v, o.nextButtonName = k, o.latestButtonName = p;
+}, ke = (v, k) => {
+  s.defaultPageSlot = v, k && (s.pageSlots[v] = k);
+}, _e = (v = "Prev", k = "Next", h = "First", d) => {
+  s.firstButtonName = h, s.prevButtonName = v, s.nextButtonName = k, s.latestButtonName = d;
 };
 export {
-  pe as default,
-  ve as setDefaultPageButtonTexts,
-  de as setDefaultPageSlot
+  ye as default,
+  _e as setDefaultPageButtonTexts,
+  ke as setDefaultPageSlot
 };
