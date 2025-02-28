@@ -3,8 +3,14 @@
     import { Settings } from '../settings/Settings';
     import { DataState } from 'lkt-data-state';
     import { httpCall, HTTPResponse } from 'lkt-http-client';
-    import { getDefaultValues, LktSettings, Paginator, PaginatorConfig, PaginatorType } from 'lkt-vue-kernel';
-    import { LktObject } from 'lkt-ts-interfaces';
+    import {
+        getDefaultValues,
+        LktObject,
+        LktSettings,
+        Paginator,
+        PaginatorConfig,
+        PaginatorType,
+    } from 'lkt-vue-kernel';
 
     const emit = defineEmits([
         'update:modelValue',

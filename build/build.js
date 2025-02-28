@@ -74,7 +74,7 @@ const r = {
         p("error", t);
       });
     }, J = (e) => {
-      e && ++l.value;
+      console.log("next: ", e), e && ++l.value;
     }, Q = (e) => {
       e && (l.value = k.value);
     }, U = (e) => {

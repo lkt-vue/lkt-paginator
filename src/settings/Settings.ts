@@ -1,14 +1,12 @@
-import {LktObject} from "lkt-ts-interfaces";
+import { LktObject } from 'lkt-vue-kernel';
 
-let pageSlots: LktObject = {};
+export class Settings {
+  static firstButtonName: string = 'First';
+  static prevButtonName: string = 'Prev';
+  static nextButtonName: string = 'Next';
+  static latestButtonName: string = 'Latest';
 
-export const Settings = {
-    firstButtonName: 'First',
-    prevButtonName: 'Prev',
-    nextButtonName: 'Next',
-    latestButtonName: 'Latest',
+  static defaultPageSlot: string = '';
 
-    defaultPageSlot: '',
-
-    pageSlots,
+  static pageSlots: LktObject = {};
 }
