@@ -99,6 +99,8 @@
 
     const loadPage = (force: boolean = false) => {
 
+            console.log('loadPage: ', Page.value, MaxPage.value, props.resource, props.resourceData, filtersDataState.getData());
+
             if (!props.resource) return;
             if (!force && (props.readOnly || !filtersDataState.changed())) return;
 
@@ -124,11 +126,25 @@
                 emit('error', r);
             });
         },
-        next = () => ++Page.value,
-        latest = () => Page.value = MaxPage.value,
-        prev = () => --Page.value,
-        first = () => Page.value = 1,
-        goTo = (page: number) => Page.value = page;
+        next = ($event?: PointerEvent|undefined) => {
+            if (!$event) return;
+            ++Page.value;
+        },
+        latest = ($event?: PointerEvent|undefined) => {
+            if (!$event) return;
+            Page.value = MaxPage.value;
+        },
+        prev = ($event?: PointerEvent|undefined) => {
+            if (!$event) return;
+            --Page.value;
+        },
+        first = ($event?: PointerEvent|undefined) => {
+            if (!$event) return;
+            Page.value = 1;
+        },
+        goTo = (page: number) => {
+            Page.value = page;
+        };
 
 
     watch(() => props.modelValue, (v) => {
@@ -137,8 +153,8 @@
     });
     watch(Page, (v) => {
         filtersDataState.increment({ page: v });
-        emit('update:modelValue', Page.value);
         loadPage();
+        emit('update:modelValue', Page.value);
     });
     watch(() => props.resourceData, (v) => {
         Page.value = 1;
@@ -172,7 +188,7 @@
                 v-if="!disabledNext"
                 v-bind="LktSettings.defaultLoadMoreButton"
                 @click="next"
-                :disabled="disabledNext"/>
+                :disabled="disabledNext" />
         </template>
         <template v-else>
             <lkt-button
@@ -183,7 +199,7 @@
                 :disabled="disabledPrev"
                 data-role="first">
                 <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
-                           v-bind:page="'first'" :title="firstButtonName"/>
+                           v-bind:page="'first'" :title="firstButtonName" />
             </lkt-button>
             <lkt-button
                 class="symbol-page"
@@ -192,7 +208,7 @@
                 :disabled="disabledPrev"
                 data-role="prev">
                 <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
-                           v-bind:page="'prev'" :title="prevButtonName"/>
+                           v-bind:page="'prev'" :title="prevButtonName" />
             </lkt-button>
 
             <lkt-button
@@ -204,7 +220,7 @@
                 v-on:click="() => {goTo(page)}"
             >
                 <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
-                           v-bind:page="page" :title="page"/>
+                           v-bind:page="page" :title="page" />
             </lkt-button>
 
             <lkt-button
@@ -213,7 +229,7 @@
                 disabled
                 data-role="page">
                 <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
-                           v-bind:page="Page" :title="Page"/>
+                           v-bind:page="Page" :title="Page" />
             </lkt-button>
 
             <lkt-button
@@ -224,7 +240,7 @@
                 data-role="page"
                 v-on:click="() => {goTo(page)}">
                 <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
-                           v-bind:page="page" :title="page"/>
+                           v-bind:page="page" :title="page" />
             </lkt-button>
             <lkt-button
                 class="symbol-page"
@@ -233,7 +249,7 @@
                 :disabled="disabledNext"
                 data-role="next">
                 <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
-                           v-bind:page="'next'" :title="nextButtonName"/>
+                           v-bind:page="'next'" :title="nextButtonName" />
             </lkt-button>
             <lkt-button
                 v-if="computedCanRenderFirstAndLastButton"
@@ -243,7 +259,7 @@
                 :disabled="disabledNext"
                 data-role="latest">
                 <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
-                           v-bind:page="'latest'" :title="latestButtonName"/>
+                           v-bind:page="'latest'" :title="latestButtonName" />
             </lkt-button>
         </template>
     </div>
