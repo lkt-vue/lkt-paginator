@@ -99,8 +99,6 @@
 
     const loadPage = (force: boolean = false) => {
 
-            console.log('loadPage: ', Page.value, MaxPage.value, props.resource, props.resourceData, filtersDataState.getData());
-
             if (!props.resource) return;
             if (!force && (props.readOnly || !filtersDataState.changed())) return;
 
