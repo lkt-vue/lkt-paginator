@@ -23,8 +23,8 @@ declare const _default: import("vue").DefineComponent<PaginatorConfig, {
     type: PaginatorType;
     loading: boolean;
     class: string;
-    filters: import("lkt-vue-kernel").LktObject;
     resource: string;
+    resourceData: import("lkt-vue-kernel").LktObject;
     modelValue: number;
     readOnly: boolean;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
