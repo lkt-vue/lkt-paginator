@@ -30,7 +30,9 @@
     const Page = ref(props.modelValue),
         MaxPage = ref(1),
         perms = ref(basePerms),
-        isLoading = ref(props.loading);
+        isLoading = ref(props.loading),
+        infiniteScrollSentinelRef = ref<HTMLElement | null>(null),
+        infiniteScrollObserver = ref<IntersectionObserver | null>(null);
 
     watch(() => props.loading, (v) => {
         isLoading.value = v;
@@ -39,6 +41,37 @@
     watch(isLoading, (v) => {
         emit('update:loading', v);
     });
+
+    // Automatically connect and disconnect observer
+    watch(infiniteScrollSentinelRef, (v) => {
+        if (v) {
+            startInfiniteScroll();
+        } else {
+            stopInfiniteScroll();
+        }
+    });
+
+    const startInfiniteScroll = () => {
+            if (props.type !== PaginatorType.Infinite) return;
+            if (!infiniteScrollSentinelRef.value) return;
+            let interval = undefined;
+
+            infiniteScrollObserver.value = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    interval = setInterval(() => {
+                        if (isLoading.value) return;
+                        if (!entries[0].isIntersecting) return;
+                        ++Page.value;
+                        clearInterval(interval);
+                    }, 100);
+                }
+            });
+
+            infiniteScrollObserver.value.observe(infiniteScrollSentinelRef.value as HTMLElement);
+        },
+        stopInfiniteScroll = () => {
+            infiniteScrollObserver.value?.disconnect();
+        };
 
 
     const previousPages = computed(() => {
@@ -117,27 +150,29 @@
                 let _perms = r.perms;
                 if (!Array.isArray(_perms)) _perms = [];
                 perms.value = _perms;
+                isLoading.value = false;
                 emit('perms', perms.value);
                 emit('custom', r.custom);
                 emit('response', r);
 
             }).catch((r: any) => {
+                isLoading.value = false;
                 emit('error', r);
             });
         },
-        next = ($event?: PointerEvent|undefined) => {
+        next = ($event?: PointerEvent | undefined) => {
             if (!$event) return;
             ++Page.value;
         },
-        latest = ($event?: PointerEvent|undefined) => {
+        latest = ($event?: PointerEvent | undefined) => {
             if (!$event) return;
             Page.value = MaxPage.value;
         },
-        prev = ($event?: PointerEvent|undefined) => {
+        prev = ($event?: PointerEvent | undefined) => {
             if (!$event) return;
             --Page.value;
         },
-        first = ($event?: PointerEvent|undefined) => {
+        first = ($event?: PointerEvent | undefined) => {
             if (!$event) return;
             Page.value = 1;
         },
@@ -188,6 +223,9 @@
                 v-bind="LktSettings.defaultLoadMoreButton"
                 @click="next"
                 :disabled="disabledNext" />
+        </template>
+        <template v-else-if="type === PaginatorType.Infinite">
+            <div v-if="!disabledNext" ref="infiniteScrollSentinelRef" />
         </template>
         <template v-else>
             <lkt-button
