@@ -16,10 +16,3 @@ export const setDefaultPageSlot = (str: string, component?: string|Component) =>
 
   if (component) Settings.pageSlots[str] = component;
 }
-
-export const setDefaultPageButtonTexts = (prev: string = 'Prev', next: string = 'Next', first: string = 'First', latest: 'Latest') => {
-  Settings.firstButtonName = first;
-  Settings.prevButtonName = prev;
-  Settings.nextButtonName = next;
-  Settings.latestButtonName = latest;
-}

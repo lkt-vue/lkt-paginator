@@ -41,11 +41,7 @@
     });
 
 
-    const firstButtonName = computed(() => Settings.firstButtonName),
-        prevButtonName = computed(() => Settings.prevButtonName),
-        nextButtonName = computed(() => Settings.nextButtonName),
-        latestButtonName = computed(() => Settings.latestButtonName),
-        previousPages = computed(() => {
+    const previousPages = computed(() => {
             let r = [];
             let j: number = Page.value - 1;
             let l = j - 5;
@@ -77,8 +73,7 @@
         });
 
     const classes = computed(() => {
-        const r = ['lkt-paginator'];
-
+        const r = [];
         if (props.readOnly) r.push(`lkt-paginator--read-only`);
         r.push(!!props.modelValue && props.modelValue > 0 ? 'is-filled' : 'is-empty');
 
@@ -186,7 +181,7 @@
 </script>
 
 <template>
-    <div :class="classes" v-if="MaxPage > 1">
+    <div class="lkt-paginator" :class="classes" v-if="MaxPage > 1">
         <template v-if="type === PaginatorType.LoadMore">
             <lkt-button
                 v-if="!disabledNext"
@@ -197,22 +192,22 @@
         <template v-else>
             <lkt-button
                 v-if="computedCanRenderFirstAndLastButton"
+                v-bind="LktSettings.defaultPaginatorFirstButton"
                 class="symbol-page"
-                :text="hasCustomPageSlot ? '' : firstButtonName"
-                v-on:click="first"
+                @click="first"
                 :disabled="disabledPrev"
                 data-role="first">
                 <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
-                           v-bind:page="'first'" :title="firstButtonName" />
+                           v-bind:page="'first'" :title="LktSettings.defaultPaginatorFirstButton?.text" />
             </lkt-button>
             <lkt-button
                 class="symbol-page"
-                :text="hasCustomPageSlot ? '' : prevButtonName"
-                v-on:click="prev"
+                v-bind="LktSettings.defaultPaginatorPrevButton"
+                @click="prev"
                 :disabled="disabledPrev"
                 data-role="prev">
                 <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
-                           v-bind:page="'prev'" :title="prevButtonName" />
+                           v-bind:page="'prev'" :title="LktSettings.defaultPaginatorPrevButton?.text" />
             </lkt-button>
 
             <lkt-button
@@ -248,22 +243,22 @@
             </lkt-button>
             <lkt-button
                 class="symbol-page"
-                :text="hasCustomPageSlot ? '' : nextButtonName"
-                v-on:click="next"
+                v-bind="LktSettings.defaultPaginatorNextButton"
+                @click="next"
                 :disabled="disabledNext"
                 data-role="next">
                 <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
-                           v-bind:page="'next'" :title="nextButtonName" />
+                           v-bind:page="'next'" :title="LktSettings.defaultPaginatorNextButton?.text" />
             </lkt-button>
             <lkt-button
                 v-if="computedCanRenderFirstAndLastButton"
                 class="symbol-page"
-                :text="hasCustomPageSlot ? '' : latestButtonName"
-                v-on:click="latest"
+                v-bind="LktSettings.defaultPaginatorLastButton"
+                @click="latest"
                 :disabled="disabledNext"
                 data-role="latest">
                 <component v-if="hasCustomPageSlot" v-bind:is="customPageSlot"
-                           v-bind:page="'latest'" :title="latestButtonName" />
+                           v-bind:page="'latest'" :title="LktSettings.defaultPaginatorLastButton?.text" />
             </lkt-button>
         </template>
     </div>

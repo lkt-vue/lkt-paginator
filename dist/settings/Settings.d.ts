@@ -1,9 +1,5 @@
-import { LktObject } from "lkt-ts-interfaces";
-export declare const Settings: {
-    firstButtonName: string;
-    prevButtonName: string;
-    nextButtonName: string;
-    latestButtonName: string;
-    defaultPageSlot: string;
-    pageSlots: LktObject;
-};
+import { LktObject } from 'lkt-vue-kernel';
+export declare class Settings {
+    static defaultPageSlot: string;
+    static pageSlots: LktObject;
+}
