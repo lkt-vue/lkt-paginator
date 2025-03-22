@@ -1,24 +1,25 @@
 :root {
+    --lkt-paginator--display: flex;
+    --lkt-paginator--align-items: center;
+    --lkt-paginator--justify-content: center;
+    --lkt-paginator--flex-wrap: wrap;
+    --lkt-paginator--gap: 10px;
+    --lkt-paginator--color: #ffffff;
+    --lkt-paginator--background: #007ebc;
+    --lkt-paginator--border-color: #ddd;
+    --lkt-paginator--width: 100%;
+    --lkt-paginator--max-width: 100%;
 
-    /** Grid */
-    --lkt-paginator-justify-content: center;
+    /** Element: Number Page */
+    --lkt-paginator--number-page--min-width: 35px;
+    --lkt-paginator--number-page--min-height: 35px;
 
-    /** Sizing */
-    --lkt-paginator-gap: 10px;
+    /** Element: Symbol Page */
+    --lkt-paginator--symbol-page--min-width: 35px;
+    --lkt-paginator--symbol-page--min-height: 35px;
 
-    --lkt-paginator-number-page-min-width: 35px;
-    --lkt-paginator-number-page-min-height: 35px;
-
-    --lkt-paginator-symbol-page-min-width: 35px;
-    --lkt-paginator-symbol-page-min-height: 35px;
-
-    /** Colors */
-    --lkt-paginator-color: #ffffff;
-    --lkt-paginator-bg: #007ebc;
-    --lkt-paginator-border-color: #ddd;
-
-    /** State: hover */
-    --lkt-paginator-color-hover: #ffffff;
-    --lkt-paginator-bg-hover: #007ebc;
-    --lkt-paginator-border-color-hover: #ddd;
+    /** Event: hover */
+    --lkt-paginator--hover--color: var(--lkt-paginator--color);
+    --lkt-paginator--hover--background: var(--lkt-paginator--background);
+    --lkt-paginator--hover--border-color: var(--lkt-paginator--border-color);
 }

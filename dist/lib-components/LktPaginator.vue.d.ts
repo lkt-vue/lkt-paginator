@@ -24,8 +24,8 @@ declare const _default: import("vue").DefineComponent<PaginatorConfig, {
     loading: boolean;
     class: string;
     resource: string;
-    resourceData: LktObject;
     modelValue: number;
+    resourceData: LktObject;
     readOnly: boolean;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 export default _default;

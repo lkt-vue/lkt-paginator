@@ -5,7 +5,7 @@ import "../style.css";
 
 const LktPaginator = {
   install: (app: App) => {
-    app.component('lkt-paginator', paginator);
+    if (app.component('lkt-paginator') === undefined)  app.component('lkt-paginator', paginator);
   },
 };
 

@@ -1,6 +1,6 @@
 {
   "name": "lkt-paginator",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "description": "A library for automatically load result pages from an HTTP API",
   "keywords": [
     "lkt",
@@ -20,7 +20,7 @@
     ".": {
       "import": "./dist/build.js"
     },
-    "./styles": "./dist/style.css",
+    "./styles": "./dist/build.css",
     "./theme": "./theme/default.css",
     "./theme/default": "./theme/default.css"
   },
@@ -52,10 +52,10 @@
     "vue-tsc": "^2.2.0"
   },
   "peerDependencies": {
-    "lkt-button": "^2.0.5",
-    "lkt-data-state": "^1.0.8",
+    "lkt-button": "^2.0.13",
+    "lkt-data-state": "^1.0.11",
     "lkt-http-client": "^1.0.11",
-    "lkt-vue-kernel": "^1.0.9",
-    "vue": "^3.2.37"
+    "lkt-vue-kernel": "^1.0.51",
+    "vue": "^3.3.0"
   }
 }
