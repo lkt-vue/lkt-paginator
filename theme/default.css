@@ -1,4 +1,4 @@
-:root {
+.lkt-paginator {
     --lkt-paginator--display: flex;
     --lkt-paginator--align-items: center;
     --lkt-paginator--justify-content: center;
