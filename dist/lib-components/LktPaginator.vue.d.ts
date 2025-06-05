@@ -25,6 +25,11 @@ declare const _default: import("vue").DefineComponent<PaginatorConfig, {
     class: string;
     resource: string;
     modelValue: number;
+    events: {
+        httpStart?: undefined | Function;
+        httpEnd?: (data: import("lkt-vue-kernel").ClickEventArgs) => void | undefined;
+        parseResults?: (data: LktObject[]) => void | undefined;
+    };
     resourceData: LktObject;
     readOnly: boolean;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;

@@ -140,23 +140,43 @@
             isLoading.value = true;
             emit('loading');
 
+            if (typeof props.events?.httpStart === 'function') {
+                props.events.httpStart();
+            }
+
             httpCall(props.resource, d).then((r: HTTPResponse) => {
                 let lastMaxPage = r.maxPage;
                 if (lastMaxPage > -1) MaxPage.value = lastMaxPage;
 
                 filtersDataState.turnStoredIntoOriginal();
+
+                if (typeof props.events?.parseResults === 'function') {
+                    r.data = props.events.parseResults(r.data);
+                }
                 emit('results', r.data);
 
                 let _perms = r.perms;
                 if (!Array.isArray(_perms)) _perms = [];
                 perms.value = _perms;
                 isLoading.value = false;
+
+                if (typeof props.events?.httpEnd === 'function') {
+                    props.events.httpEnd({
+                        httpResponse: r,
+                    });
+                }
                 emit('perms', perms.value);
                 emit('custom', r.custom);
                 emit('response', r);
 
             }).catch((r: any) => {
                 isLoading.value = false;
+
+                if (typeof props.events?.httpEnd === 'function') {
+                    props.events.httpEnd({
+                        httpResponse: r,
+                    });
+                }
                 emit('error', r);
             });
         },

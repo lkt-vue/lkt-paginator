@@ -1,5 +1,5 @@
-declare namespace fe {
+declare namespace ge {
     function install(g: any): void;
 }
-declare function ce(g: any, L: any): void;
-export { fe as default, ce as setDefaultPageSlot };
+declare function me(g: any, O: any): void;
+export { ge as default, me as setDefaultPageSlot };
