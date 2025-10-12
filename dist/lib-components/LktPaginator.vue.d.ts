@@ -32,5 +32,6 @@ declare const _default: import("vue").DefineComponent<PaginatorConfig, {
     };
     resourceData: LktObject;
     readOnly: boolean;
+    dateKey: string;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 export default _default;

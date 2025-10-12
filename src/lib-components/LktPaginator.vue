@@ -2,6 +2,7 @@
     import { computed, ref, watch } from 'vue';
     import { Settings } from '../settings/Settings';
     import { DataState } from 'lkt-data-state';
+    import { dateToTimestamp, isDate } from 'lkt-date-tools';
     import { httpCall, HTTPResponse } from 'lkt-http-client';
     import {
         getDefaultValues,
@@ -11,6 +12,7 @@
         PaginatorConfig,
         PaginatorType,
     } from 'lkt-vue-kernel';
+    import { parseCalendarPageFilters, parseNumericPageFilters } from '@/functions/parse-functions';
 
     const emit = defineEmits([
         'update:modelValue',
@@ -34,13 +36,8 @@
         infiniteScrollSentinelRef = ref<HTMLElement | null>(null),
         infiniteScrollObserver = ref<IntersectionObserver | null>(null);
 
-    watch(() => props.loading, (v) => {
-        isLoading.value = v;
-    });
-
-    watch(isLoading, (v) => {
-        emit('update:loading', v);
-    });
+    watch(() => props.loading, (v) => isLoading.value = v);
+    watch(isLoading, (v) => emit('update:loading', v));
 
     // Automatically connect and disconnect observer
     watch(infiniteScrollSentinelRef, (v) => {
@@ -113,30 +110,110 @@
         return r.join(' ');
     });
 
-    // Methods
-    const parseFilters = (filters: LktObject, page: number) => {
-        let d: LktObject = {};
-        if (typeof filters === 'object' && Object.keys(filters).length > 0) {
-            d = JSON.parse(JSON.stringify(filters));
-        }
-        for (let k in d) {
-            if (Array.isArray(d[k]) || typeof d[k] === 'object') {
-                d[k] = JSON.stringify(d[k]);
-            }
-        }
-        d.page = page;
-        return d;
-    };
+    const isCalendarType = () => [PaginatorType.CalendarAsc, PaginatorType.CalendarDesc, PaginatorType.CalendarAscDesc].includes(props.type);
 
-    let filtersDataState = new DataState(parseFilters(props.resourceData, 0));
-    if (Page.value > 0) filtersDataState.increment({ page: Page.value });
+    let numericPageFiltersDataState = new DataState(parseNumericPageFilters(props.resourceData, 0));
+    if (Page.value > 0) numericPageFiltersDataState.increment({ page: Page.value });
+
+    let calendarPageFiltersDataState = new DataState(parseCalendarPageFilters(props.resourceData, props.calendarVisibleDate, props.calendarOldestDate, props.calendarNewestDate))
+
+    watch(() => props.calendarOldestDate, (v) => {
+        calendarPageFiltersDataState.increment({oldestDate: v});
+    }, {deep: true});
+
+    watch(() => props.calendarNewestDate, (v) => {
+        calendarPageFiltersDataState.increment({newestDate: v});
+    }, {deep: true});
+
+
+    watch(() => props.calendarVisibleDate, (v) => {
+
+        calendarPageFiltersDataState.increment({visibleDate: v});
+        let data = calendarPageFiltersDataState.getData();
+        console.log('updated calendar visible date at paginator: ', v, data, props.calendarOldestDate, props.calendarNewestDate);
+        loadCalendarPage(false);
+
+    }, {deep: true});
+
+    const loadCalendarPage = (force: boolean, dir: 'newest' | 'oldest' | undefined = undefined) => {
+        if (!props.resource) return;
+        if (!force && (props.readOnly)) return;
+
+        let d = calendarPageFiltersDataState.getData();
+
+        if (props.type === PaginatorType.CalendarAsc) {
+            d.direction = 'newest';
+            d.date = props.calendarNewestDate;
+
+        } else if (props.type === PaginatorType.CalendarDesc) {
+            d.direction = 'oldest';
+            d.date = props.calendarOldestDate;
+
+        } else if (dir !== undefined) {
+            d.direction = dir;
+            if (dir === 'oldest') d.date = props.calendarOldestDate;
+            else d.date = props.calendarNewestDate;
+        }
+
+        console.log('loadCalendarPage: ', d);
+
+        isLoading.value = true;
+        emit('loading');
+
+        if (typeof props.events?.httpStart === 'function') {
+            props.events.httpStart();
+        }
+
+        httpCall(props.resource, d).then((r: HTTPResponse) => {
+            let lastMaxPage = r.maxPage;
+            if (lastMaxPage > -1) MaxPage.value = lastMaxPage;
+
+            numericPageFiltersDataState.turnStoredIntoOriginal();
+
+            if (typeof props.events?.parseResults === 'function') {
+                r.data = props.events.parseResults(r.data);
+            }
+
+            emit('results', r.data);
+
+            let _perms = r.perms;
+            if (!Array.isArray(_perms)) _perms = [];
+            perms.value = _perms;
+            isLoading.value = false;
+
+            if (typeof props.events?.httpEnd === 'function') {
+                props.events.httpEnd({
+                    httpResponse: r,
+                });
+            }
+            emit('perms', perms.value);
+            emit('custom', r.custom);
+            emit('response', r);
+
+        }).catch((r: any) => {
+            isLoading.value = false;
+
+            if (typeof props.events?.httpEnd === 'function') {
+                props.events.httpEnd({
+                    httpResponse: r,
+                });
+            }
+            emit('error', r);
+        });
+
+
+    }
 
     const loadPage = (force: boolean = false) => {
 
-            if (!props.resource) return;
-            if (!force && (props.readOnly || !filtersDataState.changed())) return;
+            if (isCalendarType()) {
+                return loadCalendarPage(force);
+            }
 
-            let d = filtersDataState.getData();
+            if (!props.resource) return;
+            if (!force && (props.readOnly || !numericPageFiltersDataState.changed())) return;
+
+            let d = numericPageFiltersDataState.getData();
             isLoading.value = true;
             emit('loading');
 
@@ -148,7 +225,7 @@
                 let lastMaxPage = r.maxPage;
                 if (lastMaxPage > -1) MaxPage.value = lastMaxPage;
 
-                filtersDataState.turnStoredIntoOriginal();
+                numericPageFiltersDataState.turnStoredIntoOriginal();
 
                 if (typeof props.events?.parseResults === 'function') {
                     r.data = props.events.parseResults(r.data);
@@ -206,20 +283,20 @@
         Page.value = parseInt(v);
     });
     watch(Page, (v) => {
-        filtersDataState.increment({ page: v });
+        numericPageFiltersDataState.increment({ page: v });
         loadPage();
         emit('update:modelValue', Page.value);
     });
     watch(() => props.resourceData, (v) => {
         Page.value = 1;
-        filtersDataState.store(parseFilters(v, Page.value));
+        numericPageFiltersDataState.store(parseNumericPageFilters(v, Page.value));
         loadPage();
     }, { deep: true });
 
     if (!props.readOnly) loadPage();
 
     defineExpose({
-        doRefresh: () => loadPage(true),
+        doRefresh: () => loadPage(true)
     });
 
     const hasCustomPageSlot = computed(() => {
@@ -247,6 +324,7 @@
         <template v-else-if="type === PaginatorType.Infinite">
             <div v-if="!disabledNext" ref="infiniteScrollSentinelRef" />
         </template>
+        <template v-else-if="isCalendarType()"></template>
         <template v-else>
             <lkt-button
                 v-if="computedCanRenderFirstAndLastButton"

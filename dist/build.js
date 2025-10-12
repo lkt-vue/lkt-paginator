@@ -1,14 +1,26 @@
-import { defineComponent as ae, mergeDefaults as le, ref as x, watch as C, computed as c, resolveComponent as re, createElementBlock as y, createCommentVNode as o, openBlock as n, normalizeClass as ne, unref as i, Fragment as I, createBlock as s, mergeProps as L, createVNode as A, withCtx as k, resolveDynamicComponent as P, renderList as H } from "vue";
-import { DataState as ue } from "lkt-data-state";
-import { httpCall as oe } from "lkt-http-client";
-import { PaginatorType as N, LktSettings as v, getDefaultValues as se, Paginator as ie } from "lkt-vue-kernel";
-const R = class R {
+import { defineComponent as ie, mergeDefaults as de, ref as w, watch as k, computed as h, resolveComponent as ce, createElementBlock as S, createCommentVNode as c, openBlock as r, normalizeClass as pe, unref as v, Fragment as V, createBlock as p, mergeProps as A, createVNode as T, withCtx as N, resolveDynamicComponent as B, renderList as W } from "vue";
+import { DataState as X } from "lkt-data-state";
+import { httpCall as Y } from "lkt-http-client";
+import { PaginatorType as P, LktSettings as D, getDefaultValues as fe, Paginator as ve } from "lkt-vue-kernel";
+const M = class M {
 };
-R.defaultPageSlot = "", R.pageSlots = {};
-let f = R;
-const de = /* @__PURE__ */ ae({
+M.defaultPageSlot = "", M.pageSlots = {};
+let b = M;
+const $ = (d) => {
+  let o = {};
+  typeof d == "object" && Object.keys(d).length > 0 && (o = JSON.parse(JSON.stringify(d)));
+  for (let f in o)
+    (Array.isArray(o[f]) || typeof o[f] == "object") && (o[f] = JSON.stringify(o[f]));
+  return o;
+}, Z = (d, o) => {
+  let f = $(d);
+  return f.page = o, f;
+}, ge = (d, o, f, i) => {
+  let e = $(d);
+  return e.visibleDate = o, e.oldestDate = f, e.newestDate = i, e;
+}, me = /* @__PURE__ */ ie({
   __name: "LktPaginator",
-  props: /* @__PURE__ */ le({
+  props: /* @__PURE__ */ de({
     type: {},
     modelValue: {},
     class: {},
@@ -16,8 +28,12 @@ const de = /* @__PURE__ */ ae({
     resourceData: {},
     readOnly: { type: Boolean },
     loading: { type: Boolean },
+    dateKey: {},
+    calendarOldestDate: {},
+    calendarNewestDate: {},
+    calendarVisibleDate: {},
     events: {}
-  }, se(ie)),
+  }, fe(ve)),
   emits: [
     "update:modelValue",
     "update:loading",
@@ -28,244 +44,264 @@ const de = /* @__PURE__ */ ae({
     "response",
     "custom"
   ],
-  setup(g, { expose: O, emit: K }) {
-    const p = K, l = g;
-    let Q = [];
-    const r = x(l.modelValue), b = x(1), E = x(Q), S = x(l.loading), D = x(null), F = x(null);
-    C(() => l.loading, (e) => {
-      S.value = e;
-    }), C(S, (e) => {
-      p("update:loading", e);
-    }), C(D, (e) => {
-      e ? U() : W();
+  setup(d, { expose: o, emit: f }) {
+    const i = f, e = d;
+    let ee = [];
+    const n = w(e.modelValue), C = w(1), F = w(ee), m = w(e.loading), E = w(null), J = w(null);
+    k(() => e.loading, (t) => m.value = t), k(m, (t) => i("update:loading", t)), k(E, (t) => {
+      t ? te() : ae();
     });
-    const U = () => {
-      if (l.type !== N.Infinite || !D.value) return;
-      let e;
-      F.value = new IntersectionObserver((u) => {
-        u[0].isIntersecting && (e = setInterval(() => {
-          S.value || u[0].isIntersecting && (++r.value, clearInterval(e));
+    const te = () => {
+      if (e.type !== P.Infinite || !E.value) return;
+      let t;
+      J.value = new IntersectionObserver((s) => {
+        s[0].isIntersecting && (t = setInterval(() => {
+          m.value || s[0].isIntersecting && (++n.value, clearInterval(t));
         }, 100));
-      }), F.value.observe(D.value);
-    }, W = () => {
-      var e;
-      (e = F.value) == null || e.disconnect();
-    }, X = c(() => {
-      let e = [], u = r.value - 1, a = u - 5;
-      a < 0 && (a = 0);
-      for (let t = u; t > a; --t) e.push(t);
-      return e = e.reverse(), e;
-    }), Y = c(() => {
-      let e = [], u = r.value + 5;
-      u > b.value && (u = b.value);
-      for (let a = r.value + 1; a <= u; ++a) e.push(a);
-      return e;
-    }), B = c(() => r.value >= b.value), w = c(() => r.value <= 1), Z = c(() => {
-      const e = [];
-      return l.readOnly && e.push("lkt-paginator--read-only"), e.push(l.modelValue && l.modelValue > 0 ? "is-filled" : "is-empty"), e.join(" ");
-    }), M = (e, u) => {
-      let a = {};
-      typeof e == "object" && Object.keys(e).length > 0 && (a = JSON.parse(JSON.stringify(e)));
-      for (let t in a)
-        (Array.isArray(a[t]) || typeof a[t] == "object") && (a[t] = JSON.stringify(a[t]));
-      return a.page = u, a;
-    };
-    let h = new ue(M(l.resourceData, 0));
-    r.value > 0 && h.increment({ page: r.value });
-    const V = (e = !1) => {
+      }), J.value.observe(E.value);
+    }, ae = () => {
+      var t;
+      (t = J.value) == null || t.disconnect();
+    }, le = h(() => {
+      let t = [], s = n.value - 1, l = s - 5;
+      l < 0 && (l = 0);
+      for (let a = s; a > l; --a) t.push(a);
+      return t = t.reverse(), t;
+    }), ne = h(() => {
+      let t = [], s = n.value + 5;
+      s > C.value && (s = C.value);
+      for (let l = n.value + 1; l <= s; ++l) t.push(l);
+      return t;
+    }), I = h(() => n.value >= C.value), z = h(() => n.value <= 1), re = h(() => {
+      const t = [];
+      return e.readOnly && t.push("lkt-paginator--read-only"), t.push(e.modelValue && e.modelValue > 0 ? "is-filled" : "is-empty"), t.join(" ");
+    }), K = () => [P.CalendarAsc, P.CalendarDesc, P.CalendarAscDesc].includes(e.type);
+    let x = new X(Z(e.resourceData, 0));
+    n.value > 0 && x.increment({ page: n.value });
+    let R = new X(ge(e.resourceData, e.calendarVisibleDate, e.calendarOldestDate, e.calendarNewestDate));
+    k(() => e.calendarOldestDate, (t) => {
+      R.increment({ oldestDate: t });
+    }, { deep: !0 }), k(() => e.calendarNewestDate, (t) => {
+      R.increment({ newestDate: t });
+    }, { deep: !0 }), k(() => e.calendarVisibleDate, (t) => {
+      R.increment({ visibleDate: t });
+      let s = R.getData();
+      console.log("updated calendar visible date at paginator: ", t, s, e.calendarOldestDate, e.calendarNewestDate), q(!1);
+    }, { deep: !0 });
+    const q = (t, s = void 0) => {
       var a;
-      if (!l.resource || !e && (l.readOnly || !h.changed())) return;
-      let u = h.getData();
-      S.value = !0, p("loading"), typeof ((a = l.events) == null ? void 0 : a.httpStart) == "function" && l.events.httpStart(), oe(l.resource, u).then((t) => {
-        var q, G;
-        let _ = t.maxPage;
-        _ > -1 && (b.value = _), h.turnStoredIntoOriginal(), typeof ((q = l.events) == null ? void 0 : q.parseResults) == "function" && (t.data = l.events.parseResults(t.data)), p("results", t.data);
-        let j = t.perms;
-        Array.isArray(j) || (j = []), E.value = j, S.value = !1, typeof ((G = l.events) == null ? void 0 : G.httpEnd) == "function" && l.events.httpEnd({
-          httpResponse: t
-        }), p("perms", E.value), p("custom", t.custom), p("response", t);
-      }).catch((t) => {
-        var _;
-        S.value = !1, typeof ((_ = l.events) == null ? void 0 : _.httpEnd) == "function" && l.events.httpEnd({
-          httpResponse: t
-        }), p("error", t);
+      if (!e.resource || !t && e.readOnly) return;
+      let l = R.getData();
+      e.type === P.CalendarAsc ? (l.direction = "newest", l.date = e.calendarNewestDate) : e.type === P.CalendarDesc ? (l.direction = "oldest", l.date = e.calendarOldestDate) : s !== void 0 && (l.direction = s, s === "oldest" ? l.date = e.calendarOldestDate : l.date = e.calendarNewestDate), console.log("loadCalendarPage: ", l), m.value = !0, i("loading"), typeof ((a = e.events) == null ? void 0 : a.httpStart) == "function" && e.events.httpStart(), Y(e.resource, l).then((u) => {
+        var L, U;
+        let y = u.maxPage;
+        y > -1 && (C.value = y), x.turnStoredIntoOriginal(), typeof ((L = e.events) == null ? void 0 : L.parseResults) == "function" && (u.data = e.events.parseResults(u.data)), i("results", u.data);
+        let _ = u.perms;
+        Array.isArray(_) || (_ = []), F.value = _, m.value = !1, typeof ((U = e.events) == null ? void 0 : U.httpEnd) == "function" && e.events.httpEnd({
+          httpResponse: u
+        }), i("perms", F.value), i("custom", u.custom), i("response", u);
+      }).catch((u) => {
+        var y;
+        m.value = !1, typeof ((y = e.events) == null ? void 0 : y.httpEnd) == "function" && e.events.httpEnd({
+          httpResponse: u
+        }), i("error", u);
       });
-    }, J = (e) => {
-      e && ++r.value;
-    }, $ = (e) => {
-      e && (r.value = b.value);
-    }, ee = (e) => {
-      e && --r.value;
-    }, te = (e) => {
-      e && (r.value = 1);
-    }, T = (e) => {
-      r.value = e;
+    }, j = (t = !1) => {
+      var l;
+      if (K())
+        return q(t);
+      if (!e.resource || !t && (e.readOnly || !x.changed())) return;
+      let s = x.getData();
+      m.value = !0, i("loading"), typeof ((l = e.events) == null ? void 0 : l.httpStart) == "function" && e.events.httpStart(), Y(e.resource, s).then((a) => {
+        var _, L;
+        let u = a.maxPage;
+        u > -1 && (C.value = u), x.turnStoredIntoOriginal(), typeof ((_ = e.events) == null ? void 0 : _.parseResults) == "function" && (a.data = e.events.parseResults(a.data)), i("results", a.data);
+        let y = a.perms;
+        Array.isArray(y) || (y = []), F.value = y, m.value = !1, typeof ((L = e.events) == null ? void 0 : L.httpEnd) == "function" && e.events.httpEnd({
+          httpResponse: a
+        }), i("perms", F.value), i("custom", a.custom), i("response", a);
+      }).catch((a) => {
+        var u;
+        m.value = !1, typeof ((u = e.events) == null ? void 0 : u.httpEnd) == "function" && e.events.httpEnd({
+          httpResponse: a
+        }), i("error", a);
+      });
+    }, G = (t) => {
+      t && ++n.value;
+    }, se = (t) => {
+      t && (n.value = C.value);
+    }, ue = (t) => {
+      t && --n.value;
+    }, oe = (t) => {
+      t && (n.value = 1);
+    }, H = (t) => {
+      n.value = t;
     };
-    C(() => l.modelValue, (e) => {
-      r.value = parseInt(e);
-    }), C(r, (e) => {
-      h.increment({ page: e }), V(), p("update:modelValue", r.value);
-    }), C(() => l.resourceData, (e) => {
-      r.value = 1, h.store(M(e, r.value)), V();
-    }, { deep: !0 }), l.readOnly || V(), O({
-      doRefresh: () => V(!0)
+    k(() => e.modelValue, (t) => {
+      n.value = parseInt(t);
+    }), k(n, (t) => {
+      x.increment({ page: t }), j(), i("update:modelValue", n.value);
+    }), k(() => e.resourceData, (t) => {
+      n.value = 1, x.store(Z(t, n.value)), j();
+    }, { deep: !0 }), e.readOnly || j(), o({
+      doRefresh: () => j(!0)
     });
-    const d = c(() => f.defaultPageSlot !== "" && typeof f.pageSlots[f.defaultPageSlot] < "u"), m = c(() => f.pageSlots[f.defaultPageSlot]), z = c(() => [
-      N.PagesPrevNextFirstLast
-    ].includes(l.type));
-    return (e, u) => {
-      const a = re("lkt-button");
-      return b.value > 1 ? (n(), y("div", {
+    const g = h(() => b.defaultPageSlot !== "" && typeof b.pageSlots[b.defaultPageSlot] < "u"), O = h(() => b.pageSlots[b.defaultPageSlot]), Q = h(() => [
+      P.PagesPrevNextFirstLast
+    ].includes(e.type));
+    return (t, s) => {
+      const l = ce("lkt-button");
+      return C.value > 1 ? (r(), S("div", {
         key: 0,
-        class: ne(["lkt-paginator", Z.value])
+        class: pe(["lkt-paginator", re.value])
       }, [
-        e.type === i(N).LoadMore ? (n(), y(I, { key: 0 }, [
-          B.value ? o("", !0) : (n(), s(a, L({ key: 0 }, i(v).defaultLoadMoreButton, {
-            onClick: J,
-            disabled: B.value
+        t.type === v(P).LoadMore ? (r(), S(V, { key: 0 }, [
+          I.value ? c("", !0) : (r(), p(l, A({ key: 0 }, v(D).defaultLoadMoreButton, {
+            onClick: G,
+            disabled: I.value
           }), null, 16, ["disabled"]))
-        ], 64)) : e.type === i(N).Infinite ? (n(), y(I, { key: 1 }, [
-          B.value ? o("", !0) : (n(), y("div", {
+        ], 64)) : t.type === v(P).Infinite ? (r(), S(V, { key: 1 }, [
+          I.value ? c("", !0) : (r(), S("div", {
             key: 0,
             ref_key: "infiniteScrollSentinelRef",
-            ref: D
+            ref: E
           }, null, 512))
-        ], 64)) : (n(), y(I, { key: 2 }, [
-          z.value ? (n(), s(a, L({ key: 0 }, i(v).defaultPaginatorFirstButton, {
+        ], 64)) : K() ? (r(), S(V, { key: 2 }, [], 64)) : (r(), S(V, { key: 3 }, [
+          Q.value ? (r(), p(l, A({ key: 0 }, v(D).defaultPaginatorFirstButton, {
             class: "symbol-page",
-            onClick: te,
-            disabled: w.value,
+            onClick: oe,
+            disabled: z.value,
             "data-role": "first"
           }), {
-            default: k(() => {
-              var t;
+            default: N(() => {
+              var a;
               return [
-                d.value ? (n(), s(P(m.value), {
+                g.value ? (r(), p(B(O.value), {
                   key: 0,
                   page: "first",
-                  title: (t = i(v).defaultPaginatorFirstButton) == null ? void 0 : t.text
-                }, null, 8, ["title"])) : o("", !0)
+                  title: (a = v(D).defaultPaginatorFirstButton) == null ? void 0 : a.text
+                }, null, 8, ["title"])) : c("", !0)
               ];
             }),
             _: 1
-          }, 16, ["disabled"])) : o("", !0),
-          A(a, L({ class: "symbol-page" }, i(v).defaultPaginatorPrevButton, {
-            onClick: ee,
-            disabled: w.value,
+          }, 16, ["disabled"])) : c("", !0),
+          T(l, A({ class: "symbol-page" }, v(D).defaultPaginatorPrevButton, {
+            onClick: ue,
+            disabled: z.value,
             "data-role": "prev"
           }), {
-            default: k(() => {
-              var t;
+            default: N(() => {
+              var a;
               return [
-                d.value ? (n(), s(P(m.value), {
+                g.value ? (r(), p(B(O.value), {
                   key: 0,
                   page: "prev",
-                  title: (t = i(v).defaultPaginatorPrevButton) == null ? void 0 : t.text
-                }, null, 8, ["title"])) : o("", !0)
+                  title: (a = v(D).defaultPaginatorPrevButton) == null ? void 0 : a.text
+                }, null, 8, ["title"])) : c("", !0)
               ];
             }),
             _: 1
           }, 16, ["disabled"]),
-          (n(!0), y(I, null, H(X.value, (t) => (n(), s(a, {
-            key: t,
-            text: d.value ? "" : t,
+          (r(!0), S(V, null, W(le.value, (a) => (r(), p(l, {
+            key: a,
+            text: g.value ? "" : a,
             class: "number-page",
             "data-role": "page",
             onClick: () => {
-              T(t);
+              H(a);
             }
           }, {
-            default: k(() => [
-              d.value ? (n(), s(P(m.value), {
+            default: N(() => [
+              g.value ? (r(), p(B(O.value), {
                 key: 0,
-                page: t,
-                title: t
-              }, null, 8, ["page", "title"])) : o("", !0)
+                page: a,
+                title: a
+              }, null, 8, ["page", "title"])) : c("", !0)
             ]),
             _: 2
           }, 1032, ["text", "onClick"]))), 128)),
-          A(a, {
+          T(l, {
             class: "number-page",
-            text: d.value ? "" : r.value,
+            text: g.value ? "" : n.value,
             disabled: "",
             "data-role": "page"
           }, {
-            default: k(() => [
-              d.value ? (n(), s(P(m.value), {
+            default: N(() => [
+              g.value ? (r(), p(B(O.value), {
                 key: 0,
-                page: r.value,
-                title: r.value
-              }, null, 8, ["page", "title"])) : o("", !0)
+                page: n.value,
+                title: n.value
+              }, null, 8, ["page", "title"])) : c("", !0)
             ]),
             _: 1
           }, 8, ["text"]),
-          (n(!0), y(I, null, H(Y.value, (t) => (n(), s(a, {
-            key: t,
-            text: d.value ? "" : t,
+          (r(!0), S(V, null, W(ne.value, (a) => (r(), p(l, {
+            key: a,
+            text: g.value ? "" : a,
             class: "number-page",
             "data-role": "page",
             onClick: () => {
-              T(t);
+              H(a);
             }
           }, {
-            default: k(() => [
-              d.value ? (n(), s(P(m.value), {
+            default: N(() => [
+              g.value ? (r(), p(B(O.value), {
                 key: 0,
-                page: t,
-                title: t
-              }, null, 8, ["page", "title"])) : o("", !0)
+                page: a,
+                title: a
+              }, null, 8, ["page", "title"])) : c("", !0)
             ]),
             _: 2
           }, 1032, ["text", "onClick"]))), 128)),
-          A(a, L({ class: "symbol-page" }, i(v).defaultPaginatorNextButton, {
-            onClick: J,
-            disabled: B.value,
+          T(l, A({ class: "symbol-page" }, v(D).defaultPaginatorNextButton, {
+            onClick: G,
+            disabled: I.value,
             "data-role": "next"
           }), {
-            default: k(() => {
-              var t;
+            default: N(() => {
+              var a;
               return [
-                d.value ? (n(), s(P(m.value), {
+                g.value ? (r(), p(B(O.value), {
                   key: 0,
                   page: "next",
-                  title: (t = i(v).defaultPaginatorNextButton) == null ? void 0 : t.text
-                }, null, 8, ["title"])) : o("", !0)
+                  title: (a = v(D).defaultPaginatorNextButton) == null ? void 0 : a.text
+                }, null, 8, ["title"])) : c("", !0)
               ];
             }),
             _: 1
           }, 16, ["disabled"]),
-          z.value ? (n(), s(a, L({
+          Q.value ? (r(), p(l, A({
             key: 1,
             class: "symbol-page"
-          }, i(v).defaultPaginatorLastButton, {
-            onClick: $,
-            disabled: B.value,
+          }, v(D).defaultPaginatorLastButton, {
+            onClick: se,
+            disabled: I.value,
             "data-role": "latest"
           }), {
-            default: k(() => {
-              var t;
+            default: N(() => {
+              var a;
               return [
-                d.value ? (n(), s(P(m.value), {
+                g.value ? (r(), p(B(O.value), {
                   key: 0,
                   page: "latest",
-                  title: (t = i(v).defaultPaginatorLastButton) == null ? void 0 : t.text
-                }, null, 8, ["title"])) : o("", !0)
+                  title: (a = v(D).defaultPaginatorLastButton) == null ? void 0 : a.text
+                }, null, 8, ["title"])) : c("", !0)
               ];
             }),
             _: 1
-          }, 16, ["disabled"])) : o("", !0)
+          }, 16, ["disabled"])) : c("", !0)
         ], 64))
-      ], 2)) : o("", !0);
+      ], 2)) : c("", !0);
     };
   }
-}), ge = {
-  install: (g) => {
-    g.component("lkt-paginator") === void 0 && g.component("lkt-paginator", de);
+}), be = {
+  install: (d) => {
+    d.component("lkt-paginator") === void 0 && d.component("lkt-paginator", me);
   }
-}, me = (g, O) => {
-  f.defaultPageSlot = g, O && (f.pageSlots[g] = O);
+}, he = (d, o) => {
+  b.defaultPageSlot = d, o && (b.pageSlots[d] = o);
 };
 export {
-  ge as default,
-  me as setDefaultPageSlot
+  be as default,
+  he as setDefaultPageSlot
 };
