@@ -1,5 +1,5 @@
-declare namespace Be {
-    function install(o: any): void;
+declare namespace Ae {
+    function install(n: any): void;
 }
-declare function _e(o: any, u: any): void;
-export { Be as default, _e as setDefaultPageSlot };
+declare function Le(n: any, u: any): void;
+export { Ae as default, Le as setDefaultPageSlot };

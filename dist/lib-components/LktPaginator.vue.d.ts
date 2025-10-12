@@ -1,4 +1,4 @@
-import { LktObject, PaginatorConfig, PaginatorType } from 'lkt-vue-kernel';
+import { PaginatorConfig, PaginatorType } from 'lkt-vue-kernel';
 declare const _default: import("vue").DefineComponent<PaginatorConfig, {
     doRefresh: () => void;
 }, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
@@ -28,9 +28,9 @@ declare const _default: import("vue").DefineComponent<PaginatorConfig, {
     events: {
         httpStart?: undefined | Function;
         httpEnd?: (data: import("lkt-vue-kernel").ClickEventArgs) => void | undefined;
-        parseResults?: (data: LktObject[]) => void | undefined;
+        parseResults?: (data: import("lkt-vue-kernel").LktObject[]) => void | undefined;
     };
-    resourceData: LktObject;
+    resourceData: import("lkt-vue-kernel").LktObject;
     readOnly: boolean;
     dateKey: string;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
