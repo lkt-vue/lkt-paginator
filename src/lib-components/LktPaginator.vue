@@ -5,7 +5,7 @@
     import { dateToTimestamp, getDateByTimestamp } from 'lkt-date-tools';
     import { httpCall, HTTPResponse } from 'lkt-http-client';
     import { getDefaultValues, LktSettings, Paginator, PaginatorConfig, PaginatorType } from 'lkt-vue-kernel';
-    import { parseCalendarPageFilters, parseNumericPageFilters } from '@/functions/parse-functions';
+    import { parseTimelinePageFilters, parseNumericPageFilters } from '@/functions/parse-functions';
 
     const emit = defineEmits([
         'update:modelValue',
@@ -29,9 +29,9 @@
         infiniteScrollSentinelRef = ref<HTMLElement | null>(null),
         infiniteScrollObserver = ref<IntersectionObserver | null>(null);
 
-    const maxOldestCalendarDate = ref(<Date|undefined>undefined),
-        maxNewestCalendarDate = ref(<Date|undefined>undefined),
-        prevCalendarVisibleDate = ref(<Date|undefined>props.calendarVisibleDate);
+    const maxOldestTimelineDate = ref(<Date|undefined>undefined),
+        maxNewestTimelineDate = ref(<Date|undefined>undefined),
+        prevTimelineVisibleDate = ref(<Date|undefined>props.timelineVisibleDate);
 
     watch(() => props.loading, (v) => isLoading.value = v);
     watch(isLoading, (v) => emit('update:loading', v));
@@ -107,42 +107,42 @@
         return r.join(' ');
     });
 
-    const isCalendarType = () => [PaginatorType.TimelineAsc, PaginatorType.TimelineDesc, PaginatorType.TimelineAscDesc].includes(props.type);
+    const isTimelineType = () => [PaginatorType.TimelineAsc, PaginatorType.TimelineDesc, PaginatorType.TimelineAscDesc].includes(props.type);
 
     let numericPageFiltersDataState = new DataState(parseNumericPageFilters(props.resourceData, 0));
     if (Page.value > 0) numericPageFiltersDataState.increment({ page: Page.value });
 
-    let calendarPageFiltersDataState = new DataState(parseCalendarPageFilters(props.resourceData, props.calendarVisibleDate, props.calendarOldestDate, props.calendarNewestDate))
+    let timelinePageFiltersDataState = new DataState(parseTimelinePageFilters(props.resourceData, props.timelineVisibleDate, props.timelineOldestDate, props.timelineNewestDate))
 
-    watch(() => props.calendarOldestDate, (v) => {
-        calendarPageFiltersDataState.increment({oldestDate: v});
+    watch(() => props.timelineOldestDate, (v) => {
+        timelinePageFiltersDataState.increment({oldestDate: v});
     }, {deep: true});
 
-    watch(() => props.calendarNewestDate, (v) => {
-        calendarPageFiltersDataState.increment({newestDate: v});
+    watch(() => props.timelineNewestDate, (v) => {
+        timelinePageFiltersDataState.increment({newestDate: v});
     }, {deep: true});
 
 
-    watch(() => props.calendarVisibleDate, (v) => {
+    watch(() => props.timelineVisibleDate, (v) => {
 
-        calendarPageFiltersDataState.increment({visibleDate: v});
-        let data = calendarPageFiltersDataState.getData();
-        loadCalendarPage(false);
+        timelinePageFiltersDataState.increment({visibleDate: v});
+        let data = timelinePageFiltersDataState.getData();
+        loadTimelinePage(false);
 
     }, {deep: true});
 
-    const loadCalendarPage = (force: boolean, dir: 'newest' | 'oldest' | undefined = undefined) => {
+    const loadTimelinePage = (force: boolean, dir: 'newest' | 'oldest' | undefined = undefined) => {
         if (!props.resource) return;
         if (!force && (props.readOnly)) return;
 
-        let d = calendarPageFiltersDataState.getData();
+        let d = timelinePageFiltersDataState.getData();
 
-        const newestTime = typeof props.calendarNewestDate === 'undefined' ? 0 : dateToTimestamp(props.calendarNewestDate),
-            oldestTime = typeof props.calendarOldestDate === 'undefined' ? 0 : dateToTimestamp(props.calendarOldestDate),
-            maxNewestTime = typeof maxNewestCalendarDate.value === 'undefined' ? 0 : dateToTimestamp(maxNewestCalendarDate.value),
-            maxOldestTime = typeof maxOldestCalendarDate.value === 'undefined' ? 0 : dateToTimestamp(maxOldestCalendarDate.value),
-            visibleTime = typeof props.calendarVisibleDate === 'undefined' ? 0 : dateToTimestamp(props.calendarVisibleDate),
-            prevVisibleTime = typeof prevCalendarVisibleDate.value === 'undefined' ? 0 : dateToTimestamp(prevCalendarVisibleDate.value);
+        const newestTime = typeof props.timelineNewestDate === 'undefined' ? 0 : dateToTimestamp(props.timelineNewestDate),
+            oldestTime = typeof props.timelineOldestDate === 'undefined' ? 0 : dateToTimestamp(props.timelineOldestDate),
+            maxNewestTime = typeof maxNewestTimelineDate.value === 'undefined' ? 0 : dateToTimestamp(maxNewestTimelineDate.value),
+            maxOldestTime = typeof maxOldestTimelineDate.value === 'undefined' ? 0 : dateToTimestamp(maxOldestTimelineDate.value),
+            visibleTime = typeof props.timelineVisibleDate === 'undefined' ? 0 : dateToTimestamp(props.timelineVisibleDate),
+            prevVisibleTime = typeof prevTimelineVisibleDate.value === 'undefined' ? 0 : dateToTimestamp(prevTimelineVisibleDate.value);
 
         let hasToRequest = false;
 
@@ -170,18 +170,18 @@
 
 
         if (direction === 'newest' && visibleTime >= newestTime && (newestTime < maxNewestTime || maxNewestTime === 0)) {
-            d.date = props.calendarNewestDate;
+            d.date = props.timelineNewestDate;
             hasToRequest = true;
 
         } else if (direction === 'oldest' && visibleTime <= oldestTime && (oldestTime > maxOldestTime || maxOldestTime === 0)) {
-            d.date = props.calendarOldestDate;
+            d.date = props.timelineOldestDate;
             hasToRequest = true;
 
         }
 
         if (!hasToRequest) return;
 
-        prevCalendarVisibleDate.value = getDateByTimestamp(visibleTime);
+        prevTimelineVisibleDate.value = getDateByTimestamp(visibleTime);
 
         isLoading.value = true;
         emit('loading');
@@ -205,8 +205,8 @@
             let _perms = r.perms;
             if (!Array.isArray(_perms)) _perms = [];
             perms.value = _perms;
-            maxNewestCalendarDate.value = r.newestDate;
-            maxOldestCalendarDate.value = r.oldestDate;
+            maxNewestTimelineDate.value = r.newestDate;
+            maxOldestTimelineDate.value = r.oldestDate;
             isLoading.value = false;
 
             if (typeof props.events?.httpEnd === 'function') {
@@ -234,8 +234,8 @@
 
     const loadPage = (force: boolean = false) => {
 
-            if (isCalendarType()) {
-                return loadCalendarPage(force);
+            if (isTimelineType()) {
+                return loadTimelinePage(force);
             }
 
             if (!props.resource) return;
@@ -352,7 +352,7 @@
         <template v-else-if="type === PaginatorType.Infinite">
             <div v-if="!disabledNext" ref="infiniteScrollSentinelRef" />
         </template>
-        <template v-else-if="isCalendarType()"></template>
+        <template v-else-if="isTimelineType()"></template>
         <template v-else>
             <lkt-button
                 v-if="computedCanRenderFirstAndLastButton"

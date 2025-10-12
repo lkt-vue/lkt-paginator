@@ -19,7 +19,7 @@ export const parseNumericPageFilters = (filters: LktObject, page: number) => {
   return r;
 }
 
-export const parseCalendarPageFilters = (filters: LktObject, visibleDate: Date|undefined, oldestDate: Date|undefined, newestDate: Date|undefined) => {
+export const parseTimelinePageFilters = (filters: LktObject, visibleDate: Date|undefined, oldestDate: Date|undefined, newestDate: Date|undefined) => {
   let r = parseFilters(filters);
   r.visibleDate = visibleDate;
   r.oldestDate = oldestDate;
