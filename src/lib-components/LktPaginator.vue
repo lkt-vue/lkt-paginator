@@ -36,6 +36,9 @@
         infiniteScrollSentinelRef = ref<HTMLElement | null>(null),
         infiniteScrollObserver = ref<IntersectionObserver | null>(null);
 
+    const maxOldestCalendarDate = ref(<Date|undefined>undefined),
+        maxNewestCalendarDate = ref(<Date|undefined>undefined);
+
     watch(() => props.loading, (v) => isLoading.value = v);
     watch(isLoading, (v) => emit('update:loading', v));
 
@@ -141,19 +144,47 @@
 
         let d = calendarPageFiltersDataState.getData();
 
-        if (props.type === PaginatorType.CalendarAsc) {
+        console.group('loadPage');
+        console.log('===========================');
+        console.log('type: ', props.type);
+
+        const newestTime = typeof props.calendarNewestDate === 'undefined' ? 0 : dateToTimestamp(props.calendarNewestDate),
+            oldestTime = typeof props.calendarOldestDate === 'undefined' ? 0 : dateToTimestamp(props.calendarOldestDate),
+            maxNewestTime = typeof maxNewestCalendarDate.value === 'undefined' ? 0 : dateToTimestamp(maxNewestCalendarDate.value),
+            maxOldestTime = typeof maxOldestCalendarDate.value === 'undefined' ? 0 : dateToTimestamp(maxOldestCalendarDate.value),
+            visibleTime = typeof props.calendarVisibleDate === 'undefined' ? 0 : dateToTimestamp(props.calendarVisibleDate);
+
+
+        console.log('oldest dates: ', props.calendarOldestDate, maxOldestCalendarDate.value);
+        console.log('oldest times: ', oldestTime, maxOldestTime);
+        console.log('visibleTime: ', props.calendarVisibleDate, visibleTime);
+        console.log('visibleTime <= oldestTime: ', visibleTime <= oldestTime, visibleTime - oldestTime);
+        console.log('oldestTime <= maxOldestTime: ', oldestTime <= maxOldestTime, oldestTime - maxOldestTime);
+
+        let hasToRequest = false;
+
+        if (props.type === PaginatorType.CalendarAsc && visibleTime >= newestTime && (newestTime < maxNewestTime || maxNewestTime === 0)) {
             d.direction = 'newest';
             d.date = props.calendarNewestDate;
+            hasToRequest = true;
+            console.log('cfg 1')
 
-        } else if (props.type === PaginatorType.CalendarDesc) {
+        } else if (props.type === PaginatorType.CalendarDesc && visibleTime <= oldestTime && (oldestTime > maxOldestTime || maxOldestTime === 0)) {
             d.direction = 'oldest';
             d.date = props.calendarOldestDate;
+            hasToRequest = true;
+            console.log('cfg 2')
 
         } else if (dir !== undefined) {
             d.direction = dir;
             if (dir === 'oldest') d.date = props.calendarOldestDate;
             else d.date = props.calendarNewestDate;
+            hasToRequest = true;
+            console.log('cfg 3')
         }
+
+        console.groupEnd();
+        if (!hasToRequest) return;
 
         console.log('loadCalendarPage: ', d);
 
@@ -179,6 +210,8 @@
             let _perms = r.perms;
             if (!Array.isArray(_perms)) _perms = [];
             perms.value = _perms;
+            maxNewestCalendarDate.value = r.newestDate;
+            maxOldestCalendarDate.value = r.oldestDate;
             isLoading.value = false;
 
             if (typeof props.events?.httpEnd === 'function') {
